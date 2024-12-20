@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 AnimatedBuilder(
                     animation: _controller,
                     builder: (context, _) {
-                      return TexMarkdown(
+                      return GptMarkdown(
                         _controller.text,
                         style: const TextStyle(
                           color: Colors.red,

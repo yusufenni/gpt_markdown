@@ -16,16 +16,17 @@ class MdWidget extends StatelessWidget {
     list.addAll(
       MarkdownComponent.generate(
         context,
-        exp.replaceAllMapped(
-            RegExp(
-              r"\\\[(.*?)\\\]|(\\begin.*?\\end{.*?})",
-              multiLine: true,
-              dotAll: true,
-            ), (match) {
-          //
-          String body = (match[1] ?? match[2])?.replaceAll("\n", " ") ?? "";
-          return "\\[$body\\]";
-        }),
+        exp,
+        // .replaceAllMapped(
+        //     RegExp(
+        //       r"\\\[(.*?)\\\]|(\\begin.*?\\end{.*?})",
+        //       multiLine: true,
+        //       dotAll: true,
+        //     ), (match) {
+        //   //
+        //   String body = (match[1] ?? match[2])?.replaceAll("\n", " ") ?? "";
+        //   return "\\[$body\\]";
+        // }),
         config,
       ),
     );

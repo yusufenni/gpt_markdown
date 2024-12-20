@@ -8,11 +8,15 @@ class LinkButton extends StatefulWidget {
   final TextStyle? textStyle;
   final String? url;
   final GptMarkdownConfig config;
+  final Color color;
+  final Color hoverColor;
 
   const LinkButton(
       {super.key,
       required this.text,
       required this.config,
+      required this.color,
+      required this.hoverColor,
       this.onPressed,
       this.textStyle,
       this.url});
@@ -27,9 +31,9 @@ class _LinkButtonState extends State<LinkButton> {
   @override
   Widget build(BuildContext context) {
     var style = (widget.config.style ?? const TextStyle()).copyWith(
-      color: _isHovering ? Colors.red : Colors.blue,
+      color: _isHovering ? widget.hoverColor : widget.color,
       decoration: TextDecoration.underline,
-      decorationColor: _isHovering ? Colors.red : Colors.blue,
+      decorationColor: _isHovering ? widget.hoverColor : widget.color,
     );
     return MouseRegion(
       cursor: SystemMouseCursors.click,

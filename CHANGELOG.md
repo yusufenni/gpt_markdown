@@ -1,6 +1,22 @@
+## 1.0.0
+
+* `TexMarkdown` is renamed to `GptMarkdown`.
+* `h1` to `h6` style added to `GptMarkdownThemeData` class. 
+* `hrLineThickness` value added to `GptMarkdownThemeData` class. 
+* `hrLineColor` Color added to `GptMarkdownThemeData` class. 
+* `linkColor` Color added to `GptMarkdownThemeData` class. 
+* `linkHoverColor` Color added to `GptMarkdownThemeData` class. 
+* Indentation improved. 
+* Math equations are now default selectable. 
+* `SelectableAdapter` Widget added to make any widget selectable.
+
+## 0.1.15
+
+* `CodeBlock` is moved out of `gpt_markdown.dart` library.
+
 ## 0.1.14
 
-* Cnaged `withOpacity` to `withAlpha` in `theme.dart` for highlightColor.
+* Changed `withOpacity` to `withAlpha` in `theme.dart` for highlightColor.
 
 ## 0.1.13
 

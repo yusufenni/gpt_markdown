@@ -81,7 +81,7 @@ Check the documentation [here.](https://github.com/saminsohag/flutter_packages/t
 import 'package:flutter/material.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 
-return TexMarkdown(
+return GptMarkdown(
     '''
     * This is a unordered list.
     ''',

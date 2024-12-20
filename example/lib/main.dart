@@ -30,16 +30,24 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         brightness: Brightness.light,
         colorSchemeSeed: Colors.blue,
+        extensions: [
+          GptMarkdownThemeData(
+            brightness: Brightness.light,
+            highlightColor: Colors.red,
+          ),
+        ],
       ),
       darkTheme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorSchemeSeed: Colors.blue,
-          extensions: [
-            GptMarkdownThemeData(
-              highlightColor: Colors.red,
-            ),
-          ]),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: Colors.blue,
+        extensions: [
+          GptMarkdownThemeData(
+            brightness: Brightness.dark,
+            highlightColor: Colors.red,
+          ),
+        ],
+      ),
       home: MyHomePage(
         title: 'GptMarkdown',
         onPressed: () {
@@ -170,7 +178,10 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                 Icons.select_all_outlined,
                 color: selectable
                     ? Theme.of(context).colorScheme.onSurfaceVariant
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.38),
               ),
             ),
             IconButton(
@@ -243,7 +254,7 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                 // ),
                                 child: Builder(
                                   builder: (context) {
-                                    Widget child = TexMarkdown(
+                                    Widget child = GptMarkdown(
                                       _controller.text,
                                       textDirection: _direction,
                                       onLinkTab: (url, title) {
@@ -301,7 +312,7 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                             ..insert(1, "|---|");
                                           tableString =
                                               tableStringList.join("\n");
-                                          return TexMarkdown(tableString);
+                                          return GptMarkdown(tableString);
                                         }
                                         var controller = ScrollController();
                                         Widget child = Math.tex(
