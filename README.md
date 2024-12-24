@@ -1,10 +1,15 @@
-This package can render ChatGPT response into Flutter app. This package suppports Markdown and Latex of ChatGPT.
+# 📦 GPT Markdown & LaTeX for Flutter
 
-## Features
+![Pub Version](https://img.shields.io/pub/v/2.3.4)
 
-You can create simple markdown view by this package. Use can make the contents selectable using `SelectiionArea` widget.
+A comprehensive Flutter package for rendering rich Markdown and LaTeX content in your apps, designed for seamless integration with AI outputs like ChatGPT and Gemini.
 
-At this moment this package supports:
+---
+
+## ✨ Key Features
+
+Render a wide variety of content with full Markdown and LaTeX support, including:
+
 - List 
 
         - Unordered list item
@@ -65,15 +70,23 @@ At this moment this package supports:
         [] Unchecked checkbox
         [x] Checked checkbox
 
+- You can make the contents selectable using `SelectiionArea` widget.
 
-## Getting started
+## 🚀 Why Use GPT Markdown?
+
+- **Optimized for AI Outputs**: Render ChatGPT and Gemini responses flawlessly in your Flutter apps.
+- **Rich Customization**: Easily apply custom styles using Flutter widgets like `TextStyle`.
+- **Selectable Content**: Enable content selection with `SelectionArea`.
+- **Seamless Integration**: Works out of the box with minimal setup.
+
+## 🛠️ Getting Started
 
 Run this command:
 ```
 flutter pub add gpt_markdown 
 ```
 
-## Usage
+## 📖 Usage
 
 Check the documentation [here.](https://github.com/saminsohag/flutter_packages/tree/main/gpt_markdown/example)
 
@@ -91,8 +104,7 @@ return GptMarkdown(
 
 ```
 
-## Here I am providing some sample response of ChatGPT and it's result:
-
+## 💡 ChatGPT Response Examples
 
 ```markdown
 ## ChatGPT Response
