@@ -1,6 +1,6 @@
 # 📦 GPT Markdown & LaTeX for Flutter
 
-![Pub Version](https://img.shields.io/pub/v/2.3.4)
+![Pub Version](https://img.shields.io/pub/v/gpt_markdown)
 
 A comprehensive Flutter package for rendering rich Markdown and LaTeX content in your apps, designed for seamless integration with AI outputs like ChatGPT and Gemini.
 
@@ -70,7 +70,7 @@ Render a wide variety of content with full Markdown and LaTeX support, including
         [] Unchecked checkbox
         [x] Checked checkbox
 
-- You can make the contents selectable using `SelectiionArea` widget.
+- You can also make the content selectable using `SelectiionArea` widget.
 
 ## 🚀 Why Use GPT Markdown?
 
@@ -143,14 +143,10 @@ You can also use LaTeX for mathematical expressions. Here's an example:
 
 Markdown and LaTeX can be powerful tools for formatting text and mathematical expressions in your Flutter app. If you have any questions or need further assistance, feel free to ask!
 ```
-<img width="714" alt="Screenshot 2024-02-15 at 4 13 59 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/8f4a4068-a12c-45d1-a954-ebaf3822e754">
-
-<img width="713" alt="Screenshot 2024-02-15 at 4 14 24 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/07530522-62a2-405a-8a3f-c284293a306e">
+<img width="614" alt="Screenshot 2024-02-15 at 4 13 59 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/8f4a4068-a12c-45d1-a954-ebaf3822e754">
 
 
-
-
-
-## Additional information
+## 🔗 Additional Information
 
 You can find the source code [here.](https://github.com/Infinitix-LLC/gpt_markdown)
+
