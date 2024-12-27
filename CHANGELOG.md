@@ -1,3 +1,9 @@
+## 1.0.1
+
+* Indentation fixed
+* `ATag` syntax fixed
+* Documentation improved in readme and example.
+
 ## 1.0.0
 
 * `TexMarkdown` is renamed to `GptMarkdown`.
