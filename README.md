@@ -8,7 +8,7 @@ A comprehensive Flutter package for rendering rich Markdown and LaTeX content in
 
 ---
 
-## Supported Markdown Features
+## Supported Markdown & LaTeX Features
 | ✨ Feature  | ✅ Supported | 🔜 Upcoming |
 | --- | --- | --- |
 | 💻 Code Block | ✅ |  |
@@ -27,6 +27,7 @@ A comprehensive Flutter package for rendering rich Markdown and LaTeX content in
 | 🔵 Bold Text | ✅ |
 | 📜 Italic Text | ✅ |
 | 🔗 Links | ✅ |
+| 📱 Selectable | ✅ |
 | 📎 Underline |  | 🔜 |
 | 🧩 Custom components |  | 🔜 |
 
