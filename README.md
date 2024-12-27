@@ -1,10 +1,17 @@
-This package can render ChatGPT response into Flutter app. This package suppports Markdown and Latex of ChatGPT.
+# 📦 GPT Markdown & LaTeX for Flutter
 
-## Features
+![Pub Version](https://img.shields.io/pub/v/gpt_markdown)
 
-You can create simple markdown view by this package. Use can make the contents selectable using `SelectiionArea` widget.
+A comprehensive Flutter package for rendering rich Markdown and LaTeX content in your apps, designed for seamless integration with AI outputs like ChatGPT and Gemini.
 
-At this moment this package supports:
+⭐ If you find this package helpful, please give it a like on [pub.dev](https://pub.dev/packages/gpt_markdown)! Your support means a lot! ⭐
+
+---
+
+## ✨ Key Features
+
+Render a wide variety of content with full Markdown and LaTeX support, including:
+
 - List 
 
         - Unordered list item
@@ -65,15 +72,23 @@ At this moment this package supports:
         [] Unchecked checkbox
         [x] Checked checkbox
 
+- You can also make the content selectable using `SelectiionArea` widget.
 
-## Getting started
+## 🚀 Why Use GPT Markdown?
+
+- **Optimized for AI Outputs**: Render ChatGPT and Gemini responses flawlessly in your Flutter apps.
+- **Rich Customization**: Easily apply custom styles using Flutter widgets like `TextStyle`.
+- **Selectable Content**: Enable content selection with `SelectionArea`.
+- **Seamless Integration**: Works out of the box with minimal setup.
+
+## 🛠️ Getting Started
 
 Run this command:
 ```
 flutter pub add gpt_markdown 
 ```
 
-## Usage
+## 📖 Usage
 
 Check the documentation [here.](https://github.com/saminsohag/flutter_packages/tree/main/gpt_markdown/example)
 
@@ -91,8 +106,7 @@ return GptMarkdown(
 
 ```
 
-## Here I am providing some sample response of ChatGPT and it's result:
-
+## 💡 ChatGPT Response Examples
 
 ```markdown
 ## ChatGPT Response
@@ -131,14 +145,10 @@ You can also use LaTeX for mathematical expressions. Here's an example:
 
 Markdown and LaTeX can be powerful tools for formatting text and mathematical expressions in your Flutter app. If you have any questions or need further assistance, feel free to ask!
 ```
-<img width="714" alt="Screenshot 2024-02-15 at 4 13 59 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/8f4a4068-a12c-45d1-a954-ebaf3822e754">
-
-<img width="713" alt="Screenshot 2024-02-15 at 4 14 24 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/07530522-62a2-405a-8a3f-c284293a306e">
+<img width="614" alt="Screenshot 2024-02-15 at 4 13 59 AM" src="https://github.com/saminsohag/flutter_packages/assets/59507062/8f4a4068-a12c-45d1-a954-ebaf3822e754">
 
 
-
-
-
-## Additional information
+## 🔗 Additional Information
 
 You can find the source code [here.](https://github.com/Infinitix-LLC/gpt_markdown)
+
