@@ -73,3 +73,55 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 ```
+
+Use `SelectableAdapter` to make any non selectable widget selectable.
+
+```dart
+SelectableAdapter(
+  selectedText: 'sin(x^2)',
+  child: Math.tex('sin(x^2)'),
+);
+```
+
+Use `GptMarkdownTheme` widget and `GptMarkdownThemeData` to customize the GptMarkdown.
+
+```dart
+GptMarkdownTheme(
+  data: GptMarkdownThemeData.of(context).copyWith(
+    highlightColor: Colors.red,
+  ),
+  child: GptMarkdown(
+    text,
+  ),
+);
+```
+
+In theme extension you can use `GptMarkdownThemeData` to customize the GptMarkdown.
+
+```dart
+theme: ThemeData(
+  useMaterial3: true,
+  brightness: Brightness.light,
+  colorSchemeSeed: Colors.blue,
+  extensions: [
+    GptMarkdownThemeData(
+      brightness: Brightness.light,
+      highlightColor: Colors.red,
+    ),
+  ],
+),
+darkTheme: ThemeData(
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  colorSchemeSeed: Colors.blue,
+  extensions: [
+    GptMarkdownThemeData(
+      brightness: Brightness.dark,
+      highlightColor: Colors.red,
+    ),
+  ],
+),
+```
+
+Please see the [README.md](https://github.com/Infinitix-LLC/gpt_markdown) and also [example](https://github.com/Infinitix-LLC/gpt_markdown/tree/main/example/lib/main.dart) app for more details.
+

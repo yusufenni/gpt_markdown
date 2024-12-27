@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:gpt_markdown/custom_widgets/selectable_adapter.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:watcher/watcher.dart';
-import 'selectable_adapter.dart';
 
 void main() {
   runApp(const MyApp());
