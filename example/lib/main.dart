@@ -395,7 +395,7 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                   ),
                   if (writingMod)
                     ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 200),
+                      constraints: const BoxConstraints(maxHeight: 400),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(

@@ -68,7 +68,7 @@ class GptMarkdownConfig {
     );
   }
 
-  getRich(InlineSpan span) {
+  Text getRich(InlineSpan span) {
     return Text.rich(
       span,
       textDirection: textDirection,

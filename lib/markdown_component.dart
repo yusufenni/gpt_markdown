@@ -12,8 +12,8 @@ abstract class MarkdownComponent {
     RadioButtonMd(),
     CheckBoxMd(),
     HrLine(),
+    LatexMathMultiLine(),
     IndentMd(),
-    LatexMathMultyLine(),
     LatexMath(),
     ImageMd(),
     HighlightedText(),
@@ -145,9 +145,10 @@ abstract class BlockMd extends MarkdownComponent {
       text,
       config,
     );
+    length = min(length, 4);
     if (length > 0) {
       child = UnorderedListView(
-        spacing: length.toDouble() * 6,
+        spacing: length * 6.0,
         child: child,
       );
     }
@@ -306,7 +307,7 @@ class RadioButtonMd extends BlockMd {
 class IndentMd extends InlineMd {
   @override
   RegExp get exp =>
-      RegExp(r"^(\ +)(((?!\n\n).)+)$", dotAll: true, multiLine: true);
+      RegExp(r"^(\ +)(((?!(\n\n|\n\ )).)+)$", dotAll: true, multiLine: true);
 
   @override
   InlineSpan span(
@@ -317,7 +318,7 @@ class IndentMd extends InlineMd {
     var match = exp.firstMatch(text);
     int spaces = (match?[1] ?? "").length;
     var data = "${match?[2]}".trim();
-    data.replaceAll(RegExp(r'\n\ *'), '\n').trim();
+    data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
     var child = TextSpan(
       children: MarkdownComponent.generate(
         context,
@@ -330,17 +331,16 @@ class IndentMd extends InlineMd {
     }
     return TextSpan(
       children: [
-        const TextSpan(text: '\n'),
         WidgetSpan(
-          child: UnorderedListView(
-            bulletColor: config.style?.color,
-            padding: spaces * 5,
-            bulletSize: 0,
-            textDirection: config.textDirection,
-            child: Text.rich(child),
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 20,
+              ),
+              Expanded(child: config.getRich(child)),
+            ],
           ),
         ),
-        const TextSpan(text: '\n'),
       ],
     );
   }
@@ -520,7 +520,7 @@ class ItalicMd extends InlineMd {
   }
 }
 
-class LatexMathMultyLine extends BlockMd {
+class LatexMathMultiLine extends BlockMd {
   @override
   String get expString => (r"\\\[(((?!\n\n).)*)\\\]|(\\begin.*?\\end{.*?})");
   @override
@@ -701,7 +701,7 @@ class SourceTag extends InlineMd {
 /// Link text component
 class ATagMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"\[([^\s\*][^\n]*?[^\s]?)?\]\(([^\s\*]+)?\)");
+  RegExp get exp => RegExp(r"\[([^\s\*][^\n]*?[^\s]?)?\]\(([^\s\*]+?)?\)");
 
   @override
   InlineSpan span(
@@ -731,7 +731,7 @@ class ATagMd extends InlineMd {
 /// Image component
 class ImageMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"\!\[([^\s][^\n]*[^\s]?)?\]\(([^\s]+)\)");
+  RegExp get exp => RegExp(r"\!\[([^\s][^\n]*[^\s]?)?\]\(([^\s]+?)\)");
 
   @override
   InlineSpan span(
