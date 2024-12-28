@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Multiline latex syntax bug fix.
+
 ## 1.0.2
 
 * Readme updated.

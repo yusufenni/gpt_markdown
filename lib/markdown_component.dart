@@ -522,7 +522,7 @@ class ItalicMd extends InlineMd {
 
 class LatexMathMultiLine extends BlockMd {
   @override
-  String get expString => (r"\\\[(((?!\n\n).)*)\\\]|(\\begin.*?\\end{.*?})");
+  String get expString => (r"\\\[(((?!\n\n).)*?)\\\]|(\\begin.*?\\end{.*?})");
   @override
   RegExp get exp => RegExp(expString, dotAll: true, multiLine: true);
 
