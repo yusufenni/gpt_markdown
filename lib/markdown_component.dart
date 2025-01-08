@@ -5,6 +5,8 @@ abstract class MarkdownComponent {
   static final List<MarkdownComponent> components = [
     CodeBlockMd(),
     NewLines(),
+    // IndentMd(),
+    ImageMd(),
     TableMd(),
     HTag(),
     UnOrderedList(),
@@ -13,7 +15,6 @@ abstract class MarkdownComponent {
     CheckBoxMd(),
     HrLine(),
     LatexMathMultiLine(),
-    IndentMd(),
     LatexMath(),
     ImageMd(),
     HighlightedText(),
@@ -306,8 +307,11 @@ class RadioButtonMd extends BlockMd {
 /// Indent
 class IndentMd extends InlineMd {
   @override
+  bool get inline => false;
+  @override
   RegExp get exp =>
-      RegExp(r"^(\ +)(((?!(\n\n|\n\ )).)+)$", dotAll: true, multiLine: true);
+      // RegExp(r"(?<=\n\n)(\ +)(.+?)(?=\n\n)", dotAll: true, multiLine: true);
+      RegExp(r"(?:\n\n+)^(\ *)(.+?)$(?:\n\n+)", dotAll: true, multiLine: true);
 
   @override
   InlineSpan span(
@@ -318,7 +322,8 @@ class IndentMd extends InlineMd {
     var match = exp.firstMatch(text);
     int spaces = (match?[1] ?? "").length;
     var data = "${match?[2]}".trim();
-    data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
+    // data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
+    data = data.trim();
     var child = TextSpan(
       children: MarkdownComponent.generate(
         context,
@@ -326,19 +331,24 @@ class IndentMd extends InlineMd {
         config,
       ),
     );
+    var leftPadding = 20.0;
     if (spaces < 4) {
-      return child;
+      leftPadding = 0;
     }
+    var padding = config.style?.fontSize ?? 16.0;
     return TextSpan(
       children: [
         WidgetSpan(
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 20,
-              ),
-              Expanded(child: config.getRich(child)),
-            ],
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: padding),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: leftPadding,
+                ),
+                Expanded(child: config.getRich(child)),
+              ],
+            ),
           ),
         ),
       ],
@@ -350,7 +360,6 @@ class IndentMd extends InlineMd {
 class UnOrderedList extends BlockMd {
   @override
   String get expString => (r"(?:\-|\*)\ ([^\n]+)$");
-  get onLinkTab => null;
 
   @override
   Widget build(
@@ -361,9 +370,10 @@ class UnOrderedList extends BlockMd {
     var match = this.exp.firstMatch(text);
     return UnorderedListView(
       bulletColor:
-          config.style?.color ?? DefaultTextStyle.of(context).style.color,
-      padding: 10.0,
-      bulletSize: 0.4 *
+          (config.style?.color ?? DefaultTextStyle.of(context).style.color),
+      padding: 7,
+      spacing: 10,
+      bulletSize: 0.3 *
           (config.style?.fontSize ??
               DefaultTextStyle.of(context).style.fontSize ??
               kDefaultFontSize),
@@ -380,8 +390,6 @@ class UnOrderedList extends BlockMd {
 class OrderedList extends BlockMd {
   @override
   String get expString => (r"([0-9]+\.)\ ([^\n]+)$");
-
-  get onLinkTab => null;
 
   @override
   Widget build(
@@ -701,7 +709,7 @@ class SourceTag extends InlineMd {
 /// Link text component
 class ATagMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"\[([^\s\*][^\n]*?[^\s]?)?\]\(([^\s\*]+?)?\)");
+  RegExp get exp => RegExp(r"\[([^\s\*\[][^\n]*?[^\s]?)?\]\(([^\s\*]*[^\)])\)");
 
   @override
   InlineSpan span(
@@ -721,7 +729,7 @@ class ATagMd extends InlineMd {
         onPressed: () {
           config.onLinkTab?.call("${match?[2]}", "${match?[1]}");
         },
-        text: "${match?[1]}",
+        text: match?[1] ?? "",
         config: config,
       ),
     );

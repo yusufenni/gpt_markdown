@@ -63,7 +63,7 @@ class OrderedListView extends StatelessWidget {
   const OrderedListView(
       {super.key,
       this.spacing = 6,
-      this.padding = 10,
+      this.padding = 6,
       TextStyle? style,
       required this.child,
       this.textDirection = TextDirection.ltr,
