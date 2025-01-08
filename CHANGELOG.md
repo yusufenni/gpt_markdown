@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Fixing latex issue for block syntax.
+
 ## 1.0.3
 
 * Multiline latex syntax bug fix.
