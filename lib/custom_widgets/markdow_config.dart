@@ -12,6 +12,7 @@ class GptMarkdownConfig {
     this.followLinkColor = false,
     this.codeBuilder,
     this.sourceTagBuilder,
+    this.highlightBuilder,
     this.maxLines,
     this.overflow,
   });
@@ -32,6 +33,7 @@ class GptMarkdownConfig {
       codeBuilder;
   final int? maxLines;
   final TextOverflow? overflow;
+  final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder;
 
   GptMarkdownConfig copyWith({
     TextStyle? style,
@@ -51,6 +53,7 @@ class GptMarkdownConfig {
         codeBuilder,
     final int? maxLines,
     final TextOverflow? overflow,
+    final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder,
   }) {
     return GptMarkdownConfig(
       style: style ?? this.style,
@@ -65,6 +68,7 @@ class GptMarkdownConfig {
       sourceTagBuilder: sourceTagBuilder ?? this.sourceTagBuilder,
       maxLines: maxLines ?? this.maxLines,
       overflow: overflow ?? this.overflow,
+      highlightBuilder: highlightBuilder ?? this.highlightBuilder,
     );
   }
 

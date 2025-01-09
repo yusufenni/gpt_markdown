@@ -422,25 +422,37 @@ class HighlightedText extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text.trim());
-    var conf = config.copyWith(
-      style: config.style?.copyWith(
-            fontWeight: FontWeight.bold,
-            background: Paint()
-              ..color = GptMarkdownTheme.of(context).highlightColor
-              ..strokeCap = StrokeCap.round
-              ..strokeJoin = StrokeJoin.round,
-          ) ??
-          TextStyle(
-            fontWeight: FontWeight.bold,
-            background: Paint()
-              ..color = GptMarkdownTheme.of(context).highlightColor
-              ..strokeCap = StrokeCap.round
-              ..strokeJoin = StrokeJoin.round,
-          ),
-    );
+    var highlightedText = match?[1] ?? "";
+
+    if (config.highlightBuilder != null) {
+      return WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: config.highlightBuilder!(
+          context,
+          highlightedText,
+          config.style ?? const TextStyle(),
+        ),
+      );
+    }
+
+    var style = config.style?.copyWith(
+          fontWeight: FontWeight.bold,
+          background: Paint()
+            ..color = GptMarkdownTheme.of(context).highlightColor
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round,
+        ) ??
+        TextStyle(
+          fontWeight: FontWeight.bold,
+          background: Paint()
+            ..color = GptMarkdownTheme.of(context).highlightColor
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round,
+        );
+
     return TextSpan(
-      text: match?[1],
-      style: conf.style,
+      text: highlightedText,
+      style: style,
     );
   }
 }
@@ -892,11 +904,9 @@ class CodeBlockMd extends BlockMd {
     String codes = this.exp.firstMatch(text)?[2] ?? "";
     String name = this.exp.firstMatch(text)?[1] ?? "";
     codes = codes.replaceAll(r"```", "").trim();
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: config.codeBuilder != null
-          ? config.codeBuilder?.call(context, name, codes)
-          : CodeField(name: name, codes: codes),
-    );
+    
+    return config.codeBuilder != null
+        ? config.codeBuilder!(context, name, codes)
+        : CodeField(name: name, codes: codes);
   }
 }
