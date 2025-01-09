@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Fixed the order of inline and block latex in markdown.
+
 ## 1.0.4
 
 * Fixing latex issue for block syntax.
