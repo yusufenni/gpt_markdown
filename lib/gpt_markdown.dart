@@ -35,6 +35,7 @@ class GptMarkdown extends StatelessWidget {
     this.codeBuilder,
     this.sourceTagBuilder,
     this.highlightBuilder,
+    this.linkBuilder,
     this.maxLines,
     this.overflow,
   });
@@ -55,6 +56,7 @@ class GptMarkdown extends StatelessWidget {
       codeBuilder;
   final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
   final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder;
+  final Widget Function(BuildContext context, String text, String url, TextStyle style)? linkBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +98,7 @@ class GptMarkdown extends StatelessWidget {
         overflow: overflow,
         sourceTagBuilder: sourceTagBuilder,
         highlightBuilder: highlightBuilder,
+        linkBuilder: linkBuilder,
       ),
     ));
   }

@@ -733,15 +733,35 @@ class ATagMd extends InlineMd {
     if (match?[1] == null && match?[2] == null) {
       return const TextSpan();
     }
+    
+    final linkText = match?[1] ?? "";
+    final url = match?[2] ?? "";
+    
+    // Use custom builder if provided
+    if (config.linkBuilder != null) {
+      return WidgetSpan(
+        child: GestureDetector(
+          onTap: () => config.onLinkTab?.call(url, linkText),
+          child: config.linkBuilder!(
+            context,
+            linkText,
+            url,
+            config.style ?? const TextStyle(),
+          ),
+        ),
+      );
+    }
+
+    // Default rendering
     var theme = GptMarkdownTheme.of(context);
     return WidgetSpan(
       child: LinkButton(
         hoverColor: theme.linkHoverColor,
         color: theme.linkColor,
         onPressed: () {
-          config.onLinkTab?.call("${match?[2]}", "${match?[1]}");
+          config.onLinkTab?.call(url, linkText);
         },
-        text: match?[1] ?? "",
+        text: linkText,
         config: config,
       ),
     );
