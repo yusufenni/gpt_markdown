@@ -401,6 +401,20 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                         );
                                       },
                                     );
+                                    codeBuilder: (context, name, code) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        child: Text(
+                                          code.trim(),
+                                          style: TextStyle(
+                                            fontFamily: 'JetBrains Mono',
+                                            fontSize: 14,
+                                            height: 1.5,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                        ),
+                                      );
+                                    };
                                     if (selectable) {
                                       child = SelectionArea(
                                         child: child,
