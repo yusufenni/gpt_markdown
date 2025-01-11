@@ -99,6 +99,7 @@ class MarkdownHelper {
 
 You can use Markdown to format text easily. Here are some examples:
 
+- `Highlighted Text`: `This text is highlighted`
 - **Bold Text**: **This text is bold**
 - *Italic Text*: *This text is italicized*
 - [Link](https://www.example.com): [This is a link](https://www.example.com)
@@ -266,6 +267,29 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                       style: const TextStyle(
                                         fontSize: 15,
                                       ),
+                                      highlightBuilder: (context, text, style) {
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.secondaryContainer,
+                                            borderRadius: BorderRadius.circular(4),
+                                            border: Border.all(
+                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            text,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                              fontFamily: 'monospace',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: style.fontSize != null ? style.fontSize! * 0.9 : 13.5,
+                                              height: style.height,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                       latexWorkaround: (tex) {
                                         List<String> stack = [];
                                         tex = tex.splitMapJoin(
@@ -377,6 +401,20 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                         );
                                       },
                                     );
+                                    codeBuilder: (context, name, code) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        child: Text(
+                                          code.trim(),
+                                          style: TextStyle(
+                                            fontFamily: 'JetBrains Mono',
+                                            fontSize: 14,
+                                            height: 1.5,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                        ),
+                                      );
+                                    };
                                     if (selectable) {
                                       child = SelectionArea(
                                         child: child,
