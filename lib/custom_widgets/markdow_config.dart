@@ -34,8 +34,11 @@ class GptMarkdownConfig {
       codeBuilder;
   final int? maxLines;
   final TextOverflow? overflow;
-  final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder;
-  final Widget Function(BuildContext context, String text, String url, TextStyle style)? linkBuilder;
+  final Widget Function(BuildContext context, String text, TextStyle style)?
+      highlightBuilder;
+  final Widget Function(
+          BuildContext context, String text, String url, TextStyle style)?
+      linkBuilder;
 
   GptMarkdownConfig copyWith({
     TextStyle? style,
@@ -55,8 +58,11 @@ class GptMarkdownConfig {
         codeBuilder,
     final int? maxLines,
     final TextOverflow? overflow,
-    final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder,
-    final Widget Function(BuildContext context, String text, String url, TextStyle style)? linkBuilder,
+    final Widget Function(BuildContext context, String text, TextStyle style)?
+        highlightBuilder,
+    final Widget Function(
+            BuildContext context, String text, String url, TextStyle style)?
+        linkBuilder,
   }) {
     return GptMarkdownConfig(
       style: style ?? this.style,

@@ -2,28 +2,28 @@ part of 'gpt_markdown.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static final List<MarkdownComponent> components = [
-    CodeBlockMd(),
-    NewLines(),
-    // IndentMd(),
-    ImageMd(),
-    TableMd(),
-    HTag(),
-    UnOrderedList(),
-    OrderedList(),
-    RadioButtonMd(),
-    CheckBoxMd(),
-    HrLine(),
-    LatexMath(),
-    LatexMathMultiLine(),
-    ImageMd(),
-    HighlightedText(),
-    StrikeMd(),
-    BoldMd(),
-    ItalicMd(),
-    ATagMd(),
-    SourceTag(),
-  ];
+  static List<MarkdownComponent> get components => [
+        CodeBlockMd(),
+        NewLines(),
+        IndentMd(),
+        ImageMd(),
+        TableMd(),
+        HTag(),
+        UnOrderedList(),
+        OrderedList(),
+        RadioButtonMd(),
+        CheckBoxMd(),
+        HrLine(),
+        LatexMath(),
+        LatexMathMultiLine(),
+        ImageMd(),
+        HighlightedText(),
+        StrikeMd(),
+        BoldMd(),
+        ItalicMd(),
+        ATagMd(),
+        SourceTag(),
+      ];
 
   /// Generate widget for markdown widget
   static List<InlineSpan> generate(
@@ -311,7 +311,7 @@ class IndentMd extends InlineMd {
   @override
   RegExp get exp =>
       // RegExp(r"(?<=\n\n)(\ +)(.+?)(?=\n\n)", dotAll: true, multiLine: true);
-      RegExp(r"(?:\n\n+)^(\ *)(.+?)$(?:\n\n+)", dotAll: true, multiLine: true);
+      RegExp(r"^>([^\n]+)$", dotAll: true, multiLine: true);
 
   @override
   InlineSpan span(
@@ -320,8 +320,7 @@ class IndentMd extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text);
-    int spaces = (match?[1] ?? "").length;
-    var data = "${match?[2]}".trim();
+    var data = "${match?[1]}".trim();
     // data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
     data = data.trim();
     var child = TextSpan(
@@ -331,23 +330,21 @@ class IndentMd extends InlineMd {
         config,
       ),
     );
-    var leftPadding = 20.0;
-    if (spaces < 4) {
-      leftPadding = 0;
-    }
-    var padding = config.style?.fontSize ?? 16.0;
     return TextSpan(
       children: [
         WidgetSpan(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: padding),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: leftPadding,
+          child: Directionality(
+            textDirection: config.textDirection,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: IndentWidget(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                direction: config.textDirection,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 10.0),
+                  child: Expanded(child: config.getRich(child)),
                 ),
-                Expanded(child: config.getRich(child)),
-              ],
+              ),
             ),
           ),
         ),
@@ -517,7 +514,8 @@ class StrikeMd extends InlineMd {
 class ItalicMd extends InlineMd {
   @override
   RegExp get exp =>
-      RegExp(r"(?<!\*)\*(?<!\s)(.+?)(?<!\s)\*(?!\*)", dotAll: true);
+      RegExp(r"(?<!\*)\*(?<!\s)(.+?)(?<!\s)\*(?!\*)|\_(?<!\s)(.+?)(?<!\s)\_",
+          dotAll: true);
 
   @override
   InlineSpan span(
@@ -526,13 +524,14 @@ class ItalicMd extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text.trim());
+    var data = match?[1] ?? match?[2];
     var conf = config.copyWith(
         style: (config.style ?? const TextStyle())
             .copyWith(fontStyle: FontStyle.italic));
     return TextSpan(
       children: MarkdownComponent.generate(
         context,
-        "${match?[1]}",
+        "$data",
         conf,
       ),
       style: conf.style,
@@ -733,10 +732,10 @@ class ATagMd extends InlineMd {
     if (match?[1] == null && match?[2] == null) {
       return const TextSpan();
     }
-    
+
     final linkText = match?[1] ?? "";
     final url = match?[2] ?? "";
-    
+
     // Use custom builder if provided
     if (config.linkBuilder != null) {
       return WidgetSpan(
@@ -924,9 +923,8 @@ class CodeBlockMd extends BlockMd {
     String codes = this.exp.firstMatch(text)?[2] ?? "";
     String name = this.exp.firstMatch(text)?[1] ?? "";
     codes = codes.replaceAll(r"```", "").trim();
-    
-    return config.codeBuilder != null
-        ? config.codeBuilder!(context, name, codes)
-        : CodeField(name: name, codes: codes);
+
+    return config.codeBuilder?.call(context, name, codes) ??
+        CodeField(name: name, codes: codes);
   }
 }

@@ -269,22 +269,33 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                       ),
                                       highlightBuilder: (context, text, style) {
                                         return Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.secondaryContainer,
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondaryContainer,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
                                             border: Border.all(
-                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary
+                                                  .withValues(alpha: 0.5),
                                               width: 1,
                                             ),
                                           ),
                                           child: Text(
                                             text,
                                             style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
                                               fontFamily: 'monospace',
                                               fontWeight: FontWeight.bold,
-                                              fontSize: style.fontSize != null ? style.fontSize! * 0.9 : 13.5,
+                                              fontSize: style.fontSize != null
+                                                  ? style.fontSize! * 0.9
+                                                  : 13.5,
                                               height: style.height,
                                             ),
                                           ),
@@ -400,21 +411,29 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                           ),
                                         );
                                       },
+                                      linkBuilder:
+                                          (context, label, path, style) {
+                                        //
+                                        return Text(path);
+                                      },
+                                      // codeBuilder: (context, name, code) {
+                                      //   return Padding(
+                                      //     padding: const EdgeInsets.symmetric(
+                                      //         horizontal: 16),
+                                      //     child: Text(
+                                      //       code.trim(),
+                                      //       style: TextStyle(
+                                      //         fontFamily: 'JetBrains Mono',
+                                      //         fontSize: 14,
+                                      //         height: 1.5,
+                                      //         color: Theme.of(context)
+                                      //             .colorScheme
+                                      //             .onSurface,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // }
                                     );
-                                    codeBuilder: (context, name, code) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        child: Text(
-                                          code.trim(),
-                                          style: TextStyle(
-                                            fontFamily: 'JetBrains Mono',
-                                            fontSize: 14,
-                                            height: 1.5,
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                          ),
-                                        ),
-                                      );
-                                    };
                                     if (selectable) {
                                       child = SelectionArea(
                                         child: child,

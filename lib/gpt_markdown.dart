@@ -13,6 +13,7 @@ import 'package:gpt_markdown/custom_widgets/unordered_ordered_list.dart';
 import 'dart:math';
 
 import 'custom_widgets/code_field.dart';
+import 'custom_widgets/indent_widget.dart';
 import 'custom_widgets/link_button.dart';
 
 part 'theme.dart';
@@ -55,8 +56,11 @@ class GptMarkdown extends StatelessWidget {
   final Widget Function(BuildContext context, String name, String code)?
       codeBuilder;
   final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
-  final Widget Function(BuildContext context, String text, TextStyle style)? highlightBuilder;
-  final Widget Function(BuildContext context, String text, String url, TextStyle style)? linkBuilder;
+  final Widget Function(BuildContext context, String text, TextStyle style)?
+      highlightBuilder;
+  final Widget Function(
+          BuildContext context, String text, String url, TextStyle style)?
+      linkBuilder;
 
   @override
   Widget build(BuildContext context) {
