@@ -1,7 +1,7 @@
 ## 1.0.6
 
 * `_italic_` and `>Indentation` syntax added.
-* `linkBuilder` and `highlightBuilder` added `[f45132b](https://github.com/Infinitix-LLC/gpt_markdown/commit/f45132b2cd4b069d3e5703561deb5c7e51d3c560)`.
+* `linkBuilder` and `highlightBuilder` added [f45132b](https://github.com/Infinitix-LLC/gpt_markdown/commit/f45132b2cd4b069d3e5703561deb5c7e51d3c560).
 
 ## 1.0.5
 
