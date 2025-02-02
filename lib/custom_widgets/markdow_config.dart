@@ -30,8 +30,8 @@ class GptMarkdownConfig {
           BuildContext context, String content, TextStyle textStyle)?
       sourceTagBuilder;
   final bool followLinkColor;
-  final Widget Function(BuildContext context, String name, String code)?
-      codeBuilder;
+  final Widget Function(
+      BuildContext context, String name, String code, bool closed)? codeBuilder;
   final int? maxLines;
   final TextOverflow? overflow;
   final Widget Function(BuildContext context, String text, TextStyle style)?
@@ -54,7 +54,8 @@ class GptMarkdownConfig {
             BuildContext context, String content, TextStyle textStyle)?
         sourceTagBuilder,
     bool? followLinkColor,
-    final Widget Function(BuildContext context, String name, String code)?
+    final Widget Function(
+            BuildContext context, String name, String code, bool closed)?
         codeBuilder,
     final int? maxLines,
     final TextOverflow? overflow,

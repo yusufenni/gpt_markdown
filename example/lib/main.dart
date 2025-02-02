@@ -416,7 +416,7 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                         //
                                         return Text(path);
                                       },
-                                      // codeBuilder: (context, name, code) {
+                                      // codeBuilder: (context, name, code, closed) {
                                       //   return Padding(
                                       //     padding: const EdgeInsets.symmetric(
                                       //         horizontal: 16),

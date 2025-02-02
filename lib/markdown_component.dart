@@ -923,8 +923,9 @@ class CodeBlockMd extends BlockMd {
     String codes = this.exp.firstMatch(text)?[2] ?? "";
     String name = this.exp.firstMatch(text)?[1] ?? "";
     codes = codes.replaceAll(r"```", "").trim();
+    bool closed = text.endsWith("```");
 
-    return config.codeBuilder?.call(context, name, codes) ??
+    return config.codeBuilder?.call(context, name, codes, closed) ??
         CodeField(name: name, codes: codes);
   }
 }

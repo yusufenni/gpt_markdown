@@ -1,3 +1,7 @@
+## 1.0.7
+
+* `closed` parameter added to `codeBuilder`.
+
 ## 1.0.6
 
 * `_italic_` and `>Indentation` syntax added.

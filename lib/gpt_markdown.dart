@@ -53,8 +53,8 @@ class GptMarkdown extends StatelessWidget {
           BuildContext context, String tex, TextStyle style, bool inline)?
       latexBuilder;
   final bool followLinkColor;
-  final Widget Function(BuildContext context, String name, String code)?
-      codeBuilder;
+  final Widget Function(
+      BuildContext context, String name, String code, bool closed)? codeBuilder;
   final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
   final Widget Function(BuildContext context, String text, TextStyle style)?
       highlightBuilder;
