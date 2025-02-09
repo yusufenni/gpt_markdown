@@ -61,23 +61,33 @@ class GptMarkdown extends StatelessWidget {
   final Widget Function(
           BuildContext context, String text, String url, TextStyle style)?
       linkBuilder;
+  String _removeExtraLinesInsideBlockLatex(String text) {
+    return text.replaceAllMapped(
+        RegExp(
+          r"\\\[(.*?)\\\]",
+          multiLine: true,
+          dotAll: true,
+        ), (match) {
+      String content = match[0] ?? "";
+      return content.replaceAllMapped(RegExp(r"\n[\n\ ]+"), (match) => "\n");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     String tex = data.trim();
+    tex = tex.replaceAllMapped(
+        RegExp(
+          r"(?<!\\)\$\$(.*?)(?<!\\)\$\$",
+          dotAll: true,
+        ),
+        (match) => "\\[${match[1] ?? ""}\\]");
     if (!tex.contains(r"\(")) {
-      tex = tex
-          .replaceAllMapped(
-              RegExp(
-                r"(?<!\\)\$\$(.*?)(?<!\\)\$\$",
-                dotAll: true,
-              ),
-              (match) => "\\[${match[1] ?? ""}\\]")
-          .replaceAllMapped(
-              RegExp(
-                r"(?<!\\)\$(.*?)(?<!\\)\$",
-              ),
-              (match) => "\\(${match[1] ?? ""}\\)");
+      tex = tex.replaceAllMapped(
+          RegExp(
+            r"(?<!\\)\$(.*?)(?<!\\)\$",
+          ),
+          (match) => "\\(${match[1] ?? ""}\\)");
       tex = tex.splitMapJoin(
         RegExp(r"\[.*?\]|\(.*?\)"),
         onNonMatch: (p0) {
@@ -85,6 +95,7 @@ class GptMarkdown extends StatelessWidget {
         },
       );
     }
+    tex = _removeExtraLinesInsideBlockLatex(tex);
     return ClipRRect(
         child: MdWidget(
       tex,
