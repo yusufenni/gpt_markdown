@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Extra lines inside block latex removed and $$..$$ syntax works with \(..\) syntax.
+
 ## 1.0.7
 
 * `closed` parameter added to `codeBuilder`.
