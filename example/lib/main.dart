@@ -413,8 +413,12 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                       },
                                       linkBuilder:
                                           (context, label, path, style) {
-                                        //
-                                        return Text(path);
+                                        return Text(
+                                          label,
+                                          style: style.copyWith(
+                                            color: Colors.blue,
+                                          ),
+                                        );
                                       },
                                       // codeBuilder: (context, name, code, closed) {
                                       //   return Padding(

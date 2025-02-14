@@ -376,7 +376,7 @@ class UnOrderedList extends BlockMd {
               kDefaultFontSize),
       textDirection: config.textDirection,
       child: MdWidget(
-        "${match?[1]}",
+        "${match?[1]?.trim()}",
         config: config,
       ),
     );
@@ -401,7 +401,7 @@ class OrderedList extends BlockMd {
       style: (config.style ?? const TextStyle())
           .copyWith(fontWeight: FontWeight.w100),
       child: MdWidget(
-        "${match?[2]}",
+        "${match?[2]?.trim()}",
         config: config,
       ),
     );
@@ -736,12 +736,14 @@ class ATagMd extends InlineMd {
     final linkText = match?[1] ?? "";
     final url = match?[2] ?? "";
 
+    var builder = config.linkBuilder;
+
     // Use custom builder if provided
-    if (config.linkBuilder != null) {
+    if (builder != null) {
       return WidgetSpan(
         child: GestureDetector(
           onTap: () => config.onLinkTab?.call(url, linkText),
-          child: config.linkBuilder!(
+          child: builder(
             context,
             linkText,
             url,

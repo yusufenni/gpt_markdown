@@ -1,5 +1,3 @@
-library gpt_markdown;
-
 import 'package:flutter/material.dart';
 import 'package:gpt_markdown/custom_widgets/markdow_config.dart';
 

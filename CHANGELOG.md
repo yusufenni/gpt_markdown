@@ -1,3 +1,8 @@
+## 1.0.9
+
+* Fixed issues with flutter 3.29.0.
+* Fixed > syntax render issue.
+
 ## 1.0.8
 
 * Extra lines inside block latex removed and $$..$$ syntax works with \(..\) syntax.
