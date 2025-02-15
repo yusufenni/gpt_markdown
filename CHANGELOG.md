@@ -1,3 +1,7 @@
+## 1.0.10
+
+* pubspec flutter version updated.
+
 ## 1.0.9
 
 * Fixed issues with flutter 3.29.0.
