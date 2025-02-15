@@ -26,16 +26,16 @@ class UnorderedListView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.baseline,
         children: [
           if (bulletSize == 0)
-            SizedBox(
-              width: spacing + padding,
-            )
+            SizedBox(width: spacing + padding)
           else
             Text.rich(
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
                 child: Padding(
-                  padding:
-                      EdgeInsetsDirectional.only(start: padding, end: spacing),
+                  padding: EdgeInsetsDirectional.only(
+                    start: padding,
+                    end: spacing,
+                  ),
                   child: Container(
                     width: bulletSize,
                     height: bulletSize,
@@ -47,9 +47,7 @@ class UnorderedListView extends StatelessWidget {
                 ),
               ),
             ),
-          Expanded(
-            child: child,
-          )
+          Expanded(child: child),
         ],
       ),
     );
@@ -60,15 +58,15 @@ class OrderedListView extends StatelessWidget {
   final String no;
   final double spacing;
   final double padding;
-  const OrderedListView(
-      {super.key,
-      this.spacing = 6,
-      this.padding = 6,
-      TextStyle? style,
-      required this.child,
-      this.textDirection = TextDirection.ltr,
-      required this.no})
-      : _style = style;
+  const OrderedListView({
+    super.key,
+    this.spacing = 6,
+    this.padding = 6,
+    TextStyle? style,
+    required this.child,
+    this.textDirection = TextDirection.ltr,
+    required this.no,
+  }) : _style = style;
   final TextStyle? _style;
   final TextDirection textDirection;
   final Widget child;
@@ -83,16 +81,9 @@ class OrderedListView extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsetsDirectional.only(start: padding, end: spacing),
-            child: Text.rich(
-              TextSpan(
-                text: no,
-              ),
-              style: _style,
-            ),
+            child: Text.rich(TextSpan(text: no), style: _style),
           ),
-          Expanded(
-            child: child,
-          )
+          Expanded(child: child),
         ],
       ),
     );

@@ -39,8 +39,9 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
       displayMedium: Typography.tall2021.displayMedium?.copyWith(inherit: true),
       displaySmall: Typography.tall2021.displaySmall?.copyWith(inherit: true),
       headlineLarge: Typography.tall2021.headlineLarge?.copyWith(inherit: true),
-      headlineMedium:
-          Typography.tall2021.headlineMedium?.copyWith(inherit: true),
+      headlineMedium: Typography.tall2021.headlineMedium?.copyWith(
+        inherit: true,
+      ),
       headlineSmall: Typography.tall2021.headlineSmall?.copyWith(inherit: true),
       titleLarge: Typography.tall2021.titleLarge?.copyWith(inherit: true),
       titleMedium: Typography.tall2021.titleMedium?.copyWith(inherit: true),
@@ -52,9 +53,7 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
       labelMedium: Typography.tall2021.labelMedium?.copyWith(inherit: true),
       labelSmall: Typography.tall2021.labelSmall?.copyWith(inherit: true),
     );
-    themeData = themeData.copyWith(
-      textTheme: typography,
-    );
+    themeData = themeData.copyWith(textTheme: typography);
     TextTheme textTheme = themeData.textTheme;
     return GptMarkdownThemeData._fromTheme(themeData, textTheme).copyWith(
       highlightColor: highlightColor,
@@ -72,7 +71,9 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
   }
 
   factory GptMarkdownThemeData._fromTheme(
-      ThemeData theme, TextTheme textTheme) {
+    ThemeData theme,
+    TextTheme textTheme,
+  ) {
     return GptMarkdownThemeData._(
       highlightColor: theme.colorScheme.onSurfaceVariant.withAlpha(50),
       h1: textTheme.headlineLarge,
@@ -144,8 +145,10 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
       h4: TextStyle.lerp(h4, other.h4, t) ?? h4,
       h5: TextStyle.lerp(h5, other.h5, t) ?? h5,
       h6: TextStyle.lerp(h6, other.h6, t) ?? h6,
-      hrLineThickness: Tween(begin: hrLineThickness, end: other.hrLineThickness)
-          .transform(t),
+      hrLineThickness: Tween(
+        begin: hrLineThickness,
+        end: other.hrLineThickness,
+      ).transform(t),
       hrLineColor: Color.lerp(hrLineColor, other.hrLineColor, t) ?? hrLineColor,
       linkColor: Color.lerp(linkColor, other.linkColor, t) ?? linkColor,
       linkHoverColor:

@@ -16,30 +16,29 @@ class _CodeFieldState extends State<CodeField> {
   Widget build(BuildContext context) {
     return Material(
       color: Theme.of(context).colorScheme.onInverseSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8,
+                ),
                 child: Text(widget.name),
               ),
               const Spacer(),
               TextButton.icon(
                 style: TextButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                  ),
+                  textStyle: const TextStyle(fontWeight: FontWeight.normal),
                 ),
                 onPressed: () async {
-                  await Clipboard.setData(ClipboardData(text: widget.codes))
-                      .then((value) {
+                  await Clipboard.setData(
+                    ClipboardData(text: widget.codes),
+                  ).then((value) {
                     setState(() {
                       _copied = true;
                     });
@@ -57,15 +56,11 @@ class _CodeFieldState extends State<CodeField> {
               ),
             ],
           ),
-          const Divider(
-            height: 1,
-          ),
+          const Divider(height: 1),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.all(16),
-            child: Text(
-              widget.codes,
-            ),
+            child: Text(widget.codes),
           ),
         ],
       ),

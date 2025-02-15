@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class SelectableAdapter extends StatelessWidget {
-  const SelectableAdapter(
-      {super.key, required this.child, required this.selectedText});
+  const SelectableAdapter({
+    super.key,
+    required this.child,
+    required this.selectedText,
+  });
 
   final Widget child;
   final String selectedText;
@@ -17,31 +20,37 @@ class SelectableAdapter extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.text,
       child: _SelectableAdapter(
-          registrar: registrar, selectedText: selectedText, child: child),
+        registrar: registrar,
+        selectedText: selectedText,
+        child: child,
+      ),
     );
   }
 }
 
 class _SelectableAdapter extends SingleChildRenderObjectWidget {
-  const _SelectableAdapter(
-      {required this.registrar,
-      required Widget child,
-      required this.selectedText})
-      : super(child: child);
+  const _SelectableAdapter({
+    required this.registrar,
+    required Widget child,
+    required this.selectedText,
+  }) : super(child: child);
 
   final SelectionRegistrar registrar;
   final String selectedText;
   @override
   _RenderSelectableAdapter createRenderObject(BuildContext context) {
     return _RenderSelectableAdapter(
-        DefaultSelectionStyle.of(context).selectionColor!,
-        registrar,
-        selectedText);
+      DefaultSelectionStyle.of(context).selectionColor!,
+      registrar,
+      selectedText,
+    );
   }
 
   @override
   void updateRenderObject(
-      BuildContext context, _RenderSelectableAdapter renderObject) {
+    BuildContext context,
+    _RenderSelectableAdapter renderObject,
+  ) {
     renderObject
       ..selectionColor = DefaultSelectionStyle.of(context).selectionColor!
       ..registrar = registrar;
@@ -51,9 +60,11 @@ class _SelectableAdapter extends SingleChildRenderObjectWidget {
 class _RenderSelectableAdapter extends RenderProxyBox
     with Selectable, SelectionRegistrant {
   _RenderSelectableAdapter(
-      Color selectionColor, SelectionRegistrar registrar, this.selectedText)
-      : _selectionColor = selectionColor,
-        _geometry = ValueNotifier<SelectionGeometry>(_noSelection) {
+    Color selectionColor,
+    SelectionRegistrar registrar,
+    this.selectedText,
+  ) : _selectionColor = selectionColor,
+      _geometry = ValueNotifier<SelectionGeometry>(_noSelection) {
     this.registrar = registrar;
     _geometry.addListener(markNeedsPaint);
   }
@@ -152,13 +163,20 @@ class _RenderSelectableAdapter extends RenderProxyBox
     switch (event.type) {
       case SelectionEventType.startEdgeUpdate:
       case SelectionEventType.endEdgeUpdate:
-        final Rect renderObjectRect =
-            Rect.fromLTWH(0, 0, size.width, size.height);
+        final Rect renderObjectRect = Rect.fromLTWH(
+          0,
+          0,
+          size.width,
+          size.height,
+        );
         // Normalize offset in case it is out side of the rect.
-        final Offset point =
-            globalToLocal((event as SelectionEdgeUpdateEvent).globalPosition);
-        final Offset adjustedPoint =
-            SelectionUtils.adjustDragOffset(renderObjectRect, point);
+        final Offset point = globalToLocal(
+          (event as SelectionEdgeUpdateEvent).globalPosition,
+        );
+        final Offset adjustedPoint = SelectionUtils.adjustDragOffset(
+          renderObjectRect,
+          point,
+        );
         if (event.type == SelectionEventType.startEdgeUpdate) {
           _start = adjustedPoint;
         } else {
@@ -189,16 +207,18 @@ class _RenderSelectableAdapter extends RenderProxyBox
             extendSelectionEvent.forward ? Offset.infinite : Offset.zero;
         if (extendSelectionEvent.isEnd) {
           if (newOffset == _end) {
-            result = extendSelectionEvent.forward
-                ? SelectionResult.next
-                : SelectionResult.previous;
+            result =
+                extendSelectionEvent.forward
+                    ? SelectionResult.next
+                    : SelectionResult.previous;
           }
           _end = newOffset;
         } else {
           if (newOffset == _start) {
-            result = extendSelectionEvent.forward
-                ? SelectionResult.next
-                : SelectionResult.previous;
+            result =
+                extendSelectionEvent.forward
+                    ? SelectionResult.next
+                    : SelectionResult.previous;
           }
           _start = newOffset;
         }
@@ -296,18 +316,22 @@ class _RenderSelectableAdapter extends RenderProxyBox
       return;
     }
     // Draw the selection highlight.
-    final Paint selectionPaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = _selectionColor;
-    context.canvas
-        .drawRect(_getSelectionHighlightRect().shift(offset), selectionPaint);
+    final Paint selectionPaint =
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = _selectionColor;
+    context.canvas.drawRect(
+      _getSelectionHighlightRect().shift(offset),
+      selectionPaint,
+    );
 
     // Push the layer links if any.
     if (_startHandle != null) {
       context.pushLayer(
         LeaderLayer(
-            link: _startHandle!,
-            offset: offset + value.startSelectionPoint!.localPosition),
+          link: _startHandle!,
+          offset: offset + value.startSelectionPoint!.localPosition,
+        ),
         (PaintingContext context, Offset offset) {},
         Offset.zero,
       );
@@ -315,8 +339,9 @@ class _RenderSelectableAdapter extends RenderProxyBox
     if (_endHandle != null) {
       context.pushLayer(
         LeaderLayer(
-            link: _endHandle!,
-            offset: offset + value.endSelectionPoint!.localPosition),
+          link: _endHandle!,
+          offset: offset + value.endSelectionPoint!.localPosition,
+        ),
         (PaintingContext context, Offset offset) {},
         Offset.zero,
       );

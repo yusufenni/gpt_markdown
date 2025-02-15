@@ -11,15 +11,16 @@ class LinkButton extends StatefulWidget {
   final Color color;
   final Color hoverColor;
 
-  const LinkButton(
-      {super.key,
-      required this.text,
-      required this.config,
-      required this.color,
-      required this.hoverColor,
-      this.onPressed,
-      this.textStyle,
-      this.url});
+  const LinkButton({
+    super.key,
+    required this.text,
+    required this.config,
+    required this.color,
+    required this.hoverColor,
+    this.onPressed,
+    this.textStyle,
+    this.url,
+  });
 
   @override
   State<LinkButton> createState() => _LinkButtonState();
@@ -44,12 +45,7 @@ class _LinkButtonState extends State<LinkButton> {
         onTapUp: (_) => _handlePress(false),
         onTapCancel: () => _handlePress(false),
         onTap: widget.onPressed,
-        child: widget.config.getRich(
-          TextSpan(
-            text: widget.text,
-            style: style,
-          ),
-        ),
+        child: widget.config.getRich(TextSpan(text: widget.text, style: style)),
       ),
     );
   }

@@ -24,21 +24,37 @@ class GptMarkdownConfig {
   final void Function(String url, String title)? onLinkTab;
   final String Function(String tex)? latexWorkaround;
   final Widget Function(
-          BuildContext context, String tex, TextStyle textStyle, bool inline)?
-      latexBuilder;
+    BuildContext context,
+    String tex,
+    TextStyle textStyle,
+    bool inline,
+  )?
+  latexBuilder;
   final Widget Function(
-          BuildContext context, String content, TextStyle textStyle)?
-      sourceTagBuilder;
+    BuildContext context,
+    String content,
+    TextStyle textStyle,
+  )?
+  sourceTagBuilder;
   final bool followLinkColor;
   final Widget Function(
-      BuildContext context, String name, String code, bool closed)? codeBuilder;
+    BuildContext context,
+    String name,
+    String code,
+    bool closed,
+  )?
+  codeBuilder;
   final int? maxLines;
   final TextOverflow? overflow;
   final Widget Function(BuildContext context, String text, TextStyle style)?
-      highlightBuilder;
+  highlightBuilder;
   final Widget Function(
-          BuildContext context, String text, String url, TextStyle style)?
-      linkBuilder;
+    BuildContext context,
+    String text,
+    String url,
+    TextStyle style,
+  )?
+  linkBuilder;
 
   GptMarkdownConfig copyWith({
     TextStyle? style,
@@ -48,22 +64,37 @@ class GptMarkdownConfig {
     final TextScaler? textScaler,
     final String Function(String tex)? latexWorkaround,
     final Widget Function(
-            BuildContext context, String tex, TextStyle textStyle, bool inline)?
-        latexBuilder,
+      BuildContext context,
+      String tex,
+      TextStyle textStyle,
+      bool inline,
+    )?
+    latexBuilder,
     final Widget Function(
-            BuildContext context, String content, TextStyle textStyle)?
-        sourceTagBuilder,
+      BuildContext context,
+      String content,
+      TextStyle textStyle,
+    )?
+    sourceTagBuilder,
     bool? followLinkColor,
     final Widget Function(
-            BuildContext context, String name, String code, bool closed)?
-        codeBuilder,
+      BuildContext context,
+      String name,
+      String code,
+      bool closed,
+    )?
+    codeBuilder,
     final int? maxLines,
     final TextOverflow? overflow,
     final Widget Function(BuildContext context, String text, TextStyle style)?
-        highlightBuilder,
+    highlightBuilder,
     final Widget Function(
-            BuildContext context, String text, String url, TextStyle style)?
-        linkBuilder,
+      BuildContext context,
+      String text,
+      String url,
+      TextStyle style,
+    )?
+    linkBuilder,
   }) {
     return GptMarkdownConfig(
       style: style ?? this.style,

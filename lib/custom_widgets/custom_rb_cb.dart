@@ -25,8 +25,10 @@ class CustomRb extends StatelessWidget {
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
-                padding:
-                    EdgeInsetsDirectional.only(start: spacing, end: spacing),
+                padding: EdgeInsetsDirectional.only(
+                  start: spacing,
+                  end: spacing,
+                ),
                 child: Radio(
                   value: value,
                   groupValue: true,
@@ -36,9 +38,7 @@ class CustomRb extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: child,
-          )
+          Expanded(child: child),
         ],
       ),
     );
@@ -70,15 +70,15 @@ class CustomCb extends StatelessWidget {
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
-                padding:
-                    EdgeInsetsDirectional.only(start: spacing, end: spacing),
+                padding: EdgeInsetsDirectional.only(
+                  start: spacing,
+                  end: spacing,
+                ),
                 child: Checkbox(value: value, onChanged: (value) {}),
               ),
             ),
           ),
-          Expanded(
-            child: child,
-          )
+          Expanded(child: child),
         ],
       ),
     );

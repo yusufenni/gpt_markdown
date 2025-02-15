@@ -2,11 +2,7 @@ part of 'gpt_markdown.dart';
 
 /// It creates a markdown widget closed to each other.
 class MdWidget extends StatelessWidget {
-  const MdWidget(
-    this.exp, {
-    super.key,
-    required this.config,
-  });
+  const MdWidget(this.exp, {super.key, required this.config});
   final String exp;
   final GptMarkdownConfig config;
 
@@ -31,10 +27,7 @@ class MdWidget extends StatelessWidget {
       ),
     );
     return config.getRich(
-      TextSpan(
-        children: list,
-        style: config.style?.copyWith(),
-      ),
+      TextSpan(children: list, style: config.style?.copyWith()),
     );
   }
 }

@@ -48,44 +48,52 @@ class GptMarkdown extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final Widget Function(
-          BuildContext context, String tex, TextStyle style, bool inline)?
-      latexBuilder;
+    BuildContext context,
+    String tex,
+    TextStyle style,
+    bool inline,
+  )?
+  latexBuilder;
   final bool followLinkColor;
   final Widget Function(
-      BuildContext context, String name, String code, bool closed)? codeBuilder;
+    BuildContext context,
+    String name,
+    String code,
+    bool closed,
+  )?
+  codeBuilder;
   final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
   final Widget Function(BuildContext context, String text, TextStyle style)?
-      highlightBuilder;
+  highlightBuilder;
   final Widget Function(
-          BuildContext context, String text, String url, TextStyle style)?
-      linkBuilder;
+    BuildContext context,
+    String text,
+    String url,
+    TextStyle style,
+  )?
+  linkBuilder;
   String _removeExtraLinesInsideBlockLatex(String text) {
     return text.replaceAllMapped(
-        RegExp(
-          r"\\\[(.*?)\\\]",
-          multiLine: true,
-          dotAll: true,
-        ), (match) {
-      String content = match[0] ?? "";
-      return content.replaceAllMapped(RegExp(r"\n[\n\ ]+"), (match) => "\n");
-    });
+      RegExp(r"\\\[(.*?)\\\]", multiLine: true, dotAll: true),
+      (match) {
+        String content = match[0] ?? "";
+        return content.replaceAllMapped(RegExp(r"\n[\n\ ]+"), (match) => "\n");
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     String tex = data.trim();
     tex = tex.replaceAllMapped(
-        RegExp(
-          r"(?<!\\)\$\$(.*?)(?<!\\)\$\$",
-          dotAll: true,
-        ),
-        (match) => "\\[${match[1] ?? ""}\\]");
+      RegExp(r"(?<!\\)\$\$(.*?)(?<!\\)\$\$", dotAll: true),
+      (match) => "\\[${match[1] ?? ""}\\]",
+    );
     if (!tex.contains(r"\(")) {
       tex = tex.replaceAllMapped(
-          RegExp(
-            r"(?<!\\)\$(.*?)(?<!\\)\$",
-          ),
-          (match) => "\\(${match[1] ?? ""}\\)");
+        RegExp(r"(?<!\\)\$(.*?)(?<!\\)\$"),
+        (match) => "\\(${match[1] ?? ""}\\)",
+      );
       tex = tex.splitMapJoin(
         RegExp(r"\[.*?\]|\(.*?\)"),
         onNonMatch: (p0) {
@@ -95,24 +103,25 @@ class GptMarkdown extends StatelessWidget {
     }
     tex = _removeExtraLinesInsideBlockLatex(tex);
     return ClipRRect(
-        child: MdWidget(
-      tex,
-      config: GptMarkdownConfig(
-        textDirection: textDirection,
-        style: style,
-        onLinkTab: onLinkTab,
-        textAlign: textAlign,
-        textScaler: textScaler,
-        followLinkColor: followLinkColor,
-        latexWorkaround: latexWorkaround,
-        latexBuilder: latexBuilder,
-        codeBuilder: codeBuilder,
-        maxLines: maxLines,
-        overflow: overflow,
-        sourceTagBuilder: sourceTagBuilder,
-        highlightBuilder: highlightBuilder,
-        linkBuilder: linkBuilder,
+      child: MdWidget(
+        tex,
+        config: GptMarkdownConfig(
+          textDirection: textDirection,
+          style: style,
+          onLinkTab: onLinkTab,
+          textAlign: textAlign,
+          textScaler: textScaler,
+          followLinkColor: followLinkColor,
+          latexWorkaround: latexWorkaround,
+          latexBuilder: latexBuilder,
+          codeBuilder: codeBuilder,
+          maxLines: maxLines,
+          overflow: overflow,
+          sourceTagBuilder: sourceTagBuilder,
+          highlightBuilder: highlightBuilder,
+          linkBuilder: linkBuilder,
+        ),
       ),
-    ));
+    );
   }
 }

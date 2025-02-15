@@ -1,3 +1,7 @@
+## 1.0.11
+
+* dart format.
+
 ## 1.0.10
 
 * pubspec flutter version updated.

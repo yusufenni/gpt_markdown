@@ -25,8 +25,11 @@ class CustomImageError extends LeafRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant RenderCustomImageError renderObject) {
-    renderObject._backgroundColor = backgroundColor ??
+    BuildContext context,
+    covariant RenderCustomImageError renderObject,
+  ) {
+    renderObject._backgroundColor =
+        backgroundColor ??
         Theme.of(context).colorScheme.surfaceContainerHighest;
     renderObject._iconColor =
         iconColor ?? Theme.of(context).colorScheme.onSurfaceVariant;
@@ -37,7 +40,10 @@ class CustomImageError extends LeafRenderObjectWidget {
 
 class RenderCustomImageError extends RenderProxyBox {
   RenderCustomImageError(
-      this._iconColor, this._backgroundColor, this._outlineColor);
+    this._iconColor,
+    this._backgroundColor,
+    this._outlineColor,
+  );
   Color _iconColor;
   Color _outlineColor;
   Color _backgroundColor;
@@ -68,29 +74,29 @@ class RenderCustomImageError extends RenderProxyBox {
   @override
   void performLayout() {
     if (constraints.hasBoundedHeight && constraints.hasBoundedWidth) {
-      size = constraints.constrain(Size(
+      size = constraints.constrain(
+        Size(
           min(constraints.maxWidth, constraints.maxHeight),
-          min(constraints.maxHeight, constraints.maxWidth)));
+          min(constraints.maxHeight, constraints.maxWidth),
+        ),
+      );
       return;
     }
     if (constraints.hasBoundedHeight || constraints.hasBoundedWidth) {
-      size = constraints.constrain(Size(
-        min(constraints.maxHeight, constraints.maxWidth),
-        min(constraints.maxHeight, constraints.maxWidth),
-      ));
+      size = constraints.constrain(
+        Size(
+          min(constraints.maxHeight, constraints.maxWidth),
+          min(constraints.maxHeight, constraints.maxWidth),
+        ),
+      );
       return;
     }
-    size = constraints.constrain(
-      const Size(80, 80),
-    );
+    size = constraints.constrain(const Size(80, 80));
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    context.canvas.drawRect(
-      offset & size,
-      Paint()..color = _backgroundColor,
-    );
+    context.canvas.drawRect(offset & size, Paint()..color = _backgroundColor);
     context.canvas.drawRect(
       offset & size,
       Paint()
@@ -102,16 +108,19 @@ class RenderCustomImageError extends RenderProxyBox {
     textPainter.text = TextSpan(
       text: String.fromCharCode(icon.codePoint),
       style: TextStyle(
-          fontSize: min(min(size.width, size.height), 35),
-          fontFamily: icon.fontFamily,
-          color: _iconColor),
+        fontSize: min(min(size.width, size.height), 35),
+        fontFamily: icon.fontFamily,
+        color: _iconColor,
+      ),
     );
     textPainter.layout();
     textPainter.paint(
       context.canvas,
       offset +
-          Offset(size.width / 2 - textPainter.size.width / 2,
-              size.height / 2 - textPainter.size.height / 2),
+          Offset(
+            size.width / 2 - textPainter.size.width / 2,
+            size.height / 2 - textPainter.size.height / 2,
+          ),
     );
   }
 }
@@ -141,8 +150,11 @@ class CustomImageLoading extends LeafRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant RenderCustomImageLoading renderObject) {
-    renderObject._backgroundColor = backgroundColor ??
+    BuildContext context,
+    covariant RenderCustomImageLoading renderObject,
+  ) {
+    renderObject._backgroundColor =
+        backgroundColor ??
         Theme.of(context).colorScheme.surfaceContainerHighest;
     renderObject._iconColor =
         iconColor ?? Theme.of(context).colorScheme.onSurfaceVariant;
@@ -153,8 +165,12 @@ class CustomImageLoading extends LeafRenderObjectWidget {
 }
 
 class RenderCustomImageLoading extends RenderProxyBox {
-  RenderCustomImageLoading(this._iconColor, this._backgroundColor,
-      this._outlineColor, this._progress);
+  RenderCustomImageLoading(
+    this._iconColor,
+    this._backgroundColor,
+    this._outlineColor,
+    this._progress,
+  );
   Color _iconColor;
   Color _outlineColor;
   Color _backgroundColor;
@@ -194,29 +210,29 @@ class RenderCustomImageLoading extends RenderProxyBox {
   @override
   void performLayout() {
     if (constraints.hasBoundedHeight && constraints.hasBoundedWidth) {
-      size = constraints.constrain(Size(
+      size = constraints.constrain(
+        Size(
           min(constraints.maxWidth, constraints.maxHeight),
-          min(constraints.maxHeight, constraints.maxWidth)));
+          min(constraints.maxHeight, constraints.maxWidth),
+        ),
+      );
       return;
     }
     if (constraints.hasBoundedHeight || constraints.hasBoundedWidth) {
-      size = constraints.constrain(Size(
-        min(constraints.maxHeight, constraints.maxWidth),
-        min(constraints.maxHeight, constraints.maxWidth),
-      ));
+      size = constraints.constrain(
+        Size(
+          min(constraints.maxHeight, constraints.maxWidth),
+          min(constraints.maxHeight, constraints.maxWidth),
+        ),
+      );
       return;
     }
-    size = constraints.constrain(
-      const Size(80, 80),
-    );
+    size = constraints.constrain(const Size(80, 80));
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    context.canvas.drawRect(
-      offset & size,
-      Paint()..color = _backgroundColor,
-    );
+    context.canvas.drawRect(offset & size, Paint()..color = _backgroundColor);
     context.canvas.drawRect(
       offset & size,
       Paint()
@@ -228,19 +244,23 @@ class RenderCustomImageLoading extends RenderProxyBox {
     textPainter.text = TextSpan(
       text: String.fromCharCode(icon.codePoint),
       style: TextStyle(
-          fontSize: min(min(size.width, size.height), 35),
-          fontFamily: icon.fontFamily,
-          color: _iconColor),
+        fontSize: min(min(size.width, size.height), 35),
+        fontFamily: icon.fontFamily,
+        color: _iconColor,
+      ),
     );
     textPainter.layout();
     context.canvas.drawRect(
-        (offset + Offset(0, size.height - 5)) & Size(size.width * _progress, 5),
-        Paint()..color = _iconColor);
+      (offset + Offset(0, size.height - 5)) & Size(size.width * _progress, 5),
+      Paint()..color = _iconColor,
+    );
     textPainter.paint(
       context.canvas,
       offset +
-          Offset(size.width / 2 - textPainter.size.width / 2,
-              size.height / 2 - textPainter.size.height / 2),
+          Offset(
+            size.width / 2 - textPainter.size.width / 2,
+            size.height / 2 - textPainter.size.height / 2,
+          ),
     );
   }
 }
