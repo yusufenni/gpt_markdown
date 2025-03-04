@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'markdow_config.dart';
+import 'markdown_config.dart';
 
 class LinkButton extends StatefulWidget {
   final String text;

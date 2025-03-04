@@ -755,35 +755,37 @@ class ImageMd extends InlineMd {
       width = double.tryParse(size?[1]?.toString().trim() ?? 'a');
       height = double.tryParse(size?[2]?.toString().trim() ?? 'a');
     }
+    late final Widget image;
+    if (config.imageBuilder != null) {
+      image = config.imageBuilder!(context, '${match?[2]}');
+    } else {
+      image = Image(
+        image: NetworkImage("${match?[2]}"),
+        loadingBuilder: (
+          BuildContext context,
+          Widget child,
+          ImageChunkEvent? loadingProgress,
+        ) {
+          if (loadingProgress == null) {
+            return child;
+          }
+          return CustomImageLoading(
+            progress:
+                loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : 1,
+          );
+        },
+        fit: BoxFit.fill,
+        errorBuilder: (context, error, stackTrace) {
+          return const CustomImageError();
+        },
+      );
+    }
     return WidgetSpan(
       alignment: PlaceholderAlignment.bottom,
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: Image(
-          image: NetworkImage("${match?[2]}"),
-          loadingBuilder: (
-            BuildContext context,
-            Widget child,
-            ImageChunkEvent? loadingProgress,
-          ) {
-            if (loadingProgress == null) {
-              return child;
-            }
-            return CustomImageLoading(
-              progress:
-                  loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : 1,
-            );
-          },
-          fit: BoxFit.fill,
-          errorBuilder: (context, error, stackTrace) {
-            return const CustomImageError();
-          },
-        ),
-      ),
+      child: SizedBox(width: width, height: height, child: image),
     );
   }
 }
