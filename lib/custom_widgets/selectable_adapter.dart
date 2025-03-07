@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+/// A custom widget that allows text selection in a widget.
+///
+/// The [SelectableAdapter] widget is used to create a widget that allows text selection.
+/// It takes a [child] parameter which is the content of the widget,
+/// and a [selectedText] parameter which is the text to be selected.
 class SelectableAdapter extends StatelessWidget {
   const SelectableAdapter({
     super.key,

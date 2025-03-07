@@ -16,6 +16,7 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
     required this.linkHoverColor,
   });
 
+  /// A factory constructor for `GptMarkdownThemeData`.
   factory GptMarkdownThemeData({
     required Brightness brightness,
     Color? highlightColor,
@@ -89,19 +90,38 @@ class GptMarkdownThemeData extends ThemeExtension<GptMarkdownThemeData> {
     );
   }
 
+  /// The highlight color.
   Color highlightColor;
+
+  /// The style of the h1 text.
   TextStyle? h1;
+
+  /// The style of the h2 text.
   TextStyle? h2;
+
+  /// The style of the h3 text.
   TextStyle? h3;
+
+  /// The style of the h4 text.
   TextStyle? h4;
+
+  /// The style of the h5 text.
   TextStyle? h5;
+
+  /// The style of the h6 text.
   TextStyle? h6;
   double hrLineThickness;
+
+  /// The color of the horizontal line.
   Color hrLineColor;
+
+  /// The color of the link.
   Color linkColor;
+
+  /// The color of the link when hovering.
   Color linkHoverColor;
 
-  /// Define default attributes.
+  /// A method to copy the `GptMarkdownThemeData`.
   @override
   GptMarkdownThemeData copyWith({
     Color? highlightColor,
@@ -166,6 +186,7 @@ class GptMarkdownTheme extends InheritedWidget {
   });
   final GptMarkdownThemeData gptThemeData;
 
+  /// A method to get the `GptMarkdownThemeData` from the `BuildContext`.
   static GptMarkdownThemeData of(BuildContext context) {
     var theme = Theme.of(context);
     final provider =

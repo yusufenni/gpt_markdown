@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// A widget that displays code with syntax highlighting and a copy button.
+///
+/// The [CodeField] widget takes a [name] parameter which is displayed as a label
+/// above the code block, and a [codes] parameter containing the actual code text
+/// to display.
+///
+/// Features:
+/// - Displays code in a Material container with rounded corners
+/// - Shows the code language/name as a label
+/// - Provides a copy button to copy code to clipboard
+/// - Visual feedback when code is copied
+/// - Themed colors that adapt to light/dark mode
 class CodeField extends StatefulWidget {
   const CodeField({super.key, required this.name, required this.codes});
   final String name;

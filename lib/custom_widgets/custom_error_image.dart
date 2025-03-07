@@ -3,6 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+/// A custom widget that displays an error image with customizable colors.
+///
+/// The [CustomImageError] widget is used to display an error image in the UI.
+/// It takes an optional [iconColor], [backgroundColor], and [outlineColor] parameter
+/// to customize the appearance of the error image.
+///
+
 class CustomImageError extends LeafRenderObjectWidget {
   const CustomImageError({
     super.key,
@@ -38,6 +45,13 @@ class CustomImageError extends LeafRenderObjectWidget {
   }
 }
 
+/// A custom render object for the [CustomImageError] widget.
+///
+/// The [RenderCustomImageError] class extends RenderProxyBox and is responsible for
+/// painting the error image. It takes a [iconColor], [backgroundColor], and [outlineColor]
+/// and uses them to draw an error image in the UI.
+///
+
 class RenderCustomImageError extends RenderProxyBox {
   RenderCustomImageError(
     this._iconColor,
@@ -47,6 +61,8 @@ class RenderCustomImageError extends RenderProxyBox {
   Color _iconColor;
   Color _outlineColor;
   Color _backgroundColor;
+
+  /// The color of the icon.
   set iconColor(Color value) {
     if (value == _iconColor) {
       return;
@@ -55,6 +71,7 @@ class RenderCustomImageError extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  /// The background color of the error image.
   set backgroundColor(Color value) {
     if (value == _backgroundColor) {
       return;
@@ -63,6 +80,7 @@ class RenderCustomImageError extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  /// The outline color of the error image.
   set outlineColor(Color value) {
     if (value == _outlineColor) {
       return;
@@ -125,6 +143,13 @@ class RenderCustomImageError extends RenderProxyBox {
   }
 }
 
+/// A custom widget that displays a loading image with customizable colors.
+///
+/// The [CustomImageLoading] widget is used to display a loading image in the UI.
+/// It takes an optional [iconColor], [backgroundColor], [outlineColor], and [progress] parameter
+/// to customize the appearance of the loading image.
+///
+
 class CustomImageLoading extends LeafRenderObjectWidget {
   const CustomImageLoading({
     super.key,
@@ -133,9 +158,17 @@ class CustomImageLoading extends LeafRenderObjectWidget {
     this.outlineColor,
     this.progress = 1,
   });
+
+  /// The color of the icon.
   final Color? iconColor;
+
+  /// The background color of the loading image.
   final Color? backgroundColor;
+
+  /// The outline color of the loading image.
   final Color? outlineColor;
+
+  /// The progress of the loading image.
   final double progress;
 
   @override
@@ -163,6 +196,13 @@ class CustomImageLoading extends LeafRenderObjectWidget {
     renderObject.progress = progress;
   }
 }
+
+/// A custom render object for the [CustomImageLoading] widget.
+///
+/// The [RenderCustomImageLoading] class extends RenderProxyBox and is responsible for
+/// painting the loading image. It takes a [iconColor], [backgroundColor], [outlineColor], and [progress]
+/// and uses them to draw a loading image in the UI.
+///
 
 class RenderCustomImageLoading extends RenderProxyBox {
   RenderCustomImageLoading(

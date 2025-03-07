@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A configuration class for the GPT Markdown component.
+///
+/// The [GptMarkdownConfig] class is used to configure the GPT Markdown component.
+/// It takes a [style] parameter to set the style of the text,
+/// a [textDirection] parameter to set the direction of the text,
+/// and an optional [onLinkTab] parameter to handle link clicks.
 class GptMarkdownConfig {
   const GptMarkdownConfig({
     this.style,
@@ -18,12 +24,26 @@ class GptMarkdownConfig {
     this.maxLines,
     this.overflow,
   });
+
+  /// The direction of the text.
   final TextDirection textDirection;
+
+  /// The style of the text.
   final TextStyle? style;
+
+  /// The alignment of the text.
   final TextAlign? textAlign;
+
+  /// The text scaler.
   final TextScaler? textScaler;
+
+  /// The callback function to handle link clicks.
   final void Function(String url, String title)? onLinkTab;
+
+  /// The LaTeX workaround.
   final String Function(String tex)? latexWorkaround;
+
+  /// The LaTeX builder.
   final Widget Function(
     BuildContext context,
     String tex,
@@ -31,13 +51,19 @@ class GptMarkdownConfig {
     bool inline,
   )?
   latexBuilder;
+
+  /// The source tag builder.
   final Widget Function(
     BuildContext context,
     String content,
     TextStyle textStyle,
   )?
   sourceTagBuilder;
+
+  /// Whether to follow the link color.
   final bool followLinkColor;
+
+  /// The code builder.
   final Widget Function(
     BuildContext context,
     String name,
@@ -45,8 +71,14 @@ class GptMarkdownConfig {
     bool closed,
   )?
   codeBuilder;
+
+  /// The maximum number of lines.
   final int? maxLines;
+
+  /// The overflow.
   final TextOverflow? overflow;
+
+  /// The highlight builder.
   final Widget Function(BuildContext context, String text, TextStyle style)?
   highlightBuilder;
   final Widget Function(
@@ -56,8 +88,11 @@ class GptMarkdownConfig {
     TextStyle style,
   )?
   linkBuilder;
+
+  /// The image builder.
   final Widget Function(BuildContext, String imageUrl)? imageBuilder;
 
+  /// A copy of the configuration with the specified parameters.
   GptMarkdownConfig copyWith({
     TextStyle? style,
     TextDirection? textDirection,
@@ -118,6 +153,7 @@ class GptMarkdownConfig {
     );
   }
 
+  /// A method to get a rich text widget from an inline span.
   Text getRich(InlineSpan span) {
     return Text.rich(
       span,

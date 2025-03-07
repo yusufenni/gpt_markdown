@@ -1,3 +1,7 @@
+## 1.0.12
+
+* imageBuilder parameter added.
+
 ## 1.0.11
 
 * dart format.

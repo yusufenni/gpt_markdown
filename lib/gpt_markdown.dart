@@ -39,15 +39,33 @@ class GptMarkdown extends StatelessWidget {
     this.maxLines,
     this.overflow,
   });
+
+  /// The direction of the text.
   final TextDirection textDirection;
+
+  /// The data to be displayed.
   final String data;
+
+  /// The style of the text.
   final TextStyle? style;
+
+  /// The alignment of the text.
   final TextAlign? textAlign;
+
+  /// The text scaler.
   final TextScaler? textScaler;
+
+  /// The callback function to handle link clicks.
   final void Function(String url, String title)? onLinkTab;
+
+  /// The LaTeX workaround.
   final String Function(String tex)? latexWorkaround;
   final int? maxLines;
+
+  /// The overflow.
   final TextOverflow? overflow;
+
+  /// The LaTeX builder.
   final Widget Function(
     BuildContext context,
     String tex,
@@ -55,7 +73,11 @@ class GptMarkdown extends StatelessWidget {
     bool inline,
   )?
   latexBuilder;
+
+  /// Whether to follow the link color.
   final bool followLinkColor;
+
+  /// The code builder.
   final Widget Function(
     BuildContext context,
     String name,
@@ -63,9 +85,15 @@ class GptMarkdown extends StatelessWidget {
     bool closed,
   )?
   codeBuilder;
+
+  /// The source tag builder.
   final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
+
+  /// The highlight builder.
   final Widget Function(BuildContext context, String text, TextStyle style)?
   highlightBuilder;
+
+  /// The link builder.
   final Widget Function(
     BuildContext context,
     String text,
@@ -73,7 +101,11 @@ class GptMarkdown extends StatelessWidget {
     TextStyle style,
   )?
   linkBuilder;
+
+  /// The image builder.
   final Widget Function(BuildContext, String imageUrl)? imageBuilder;
+
+  /// A method to remove extra lines inside block LaTeX.
   String _removeExtraLinesInsideBlockLatex(String text) {
     return text.replaceAllMapped(
       RegExp(r"\\\[(.*?)\\\]", multiLine: true, dotAll: true),

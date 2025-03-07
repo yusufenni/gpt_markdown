@@ -3,7 +3,11 @@ part of 'gpt_markdown.dart';
 /// It creates a markdown widget closed to each other.
 class MdWidget extends StatelessWidget {
   const MdWidget(this.exp, {super.key, required this.config});
+
+  /// The expression to be displayed.
   final String exp;
+
+  /// The configuration of the markdown widget.
   final GptMarkdownConfig config;
 
   @override
@@ -32,6 +36,7 @@ class MdWidget extends StatelessWidget {
   }
 }
 
+/// A custom table column width.
 class CustomTableColumnWidth extends TableColumnWidth {
   @override
   double maxIntrinsicWidth(Iterable<RenderBox> cells, double containerWidth) {

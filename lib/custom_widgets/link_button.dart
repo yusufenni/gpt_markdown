@@ -2,13 +2,33 @@ import 'package:flutter/material.dart';
 
 import 'markdown_config.dart';
 
+/// A custom button widget that displays a link with customizable colors and styles.
+///
+/// The [LinkButton] widget is used to create a button that displays a link in the UI.
+/// It takes a [text] parameter which is the text of the link,
+/// a [config] parameter which is the configuration for the link,
+/// a [color] parameter to set the color of the link,
+
 class LinkButton extends StatefulWidget {
+  /// The text of the link.
   final String text;
+
+  /// The callback function to be called when the link is pressed.
   final VoidCallback? onPressed;
+
+  /// The style of the text.
   final TextStyle? textStyle;
+
+  /// The URL of the link.
   final String? url;
+
+  /// The configuration for the link.
   final GptMarkdownConfig config;
+
+  /// The color of the link.
   final Color color;
+
+  /// The color of the link when hovering.
   final Color hoverColor;
 
   const LinkButton({
