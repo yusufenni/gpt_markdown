@@ -328,8 +328,15 @@ Markdown and LaTeX can be powerful tools for formatting text and mathematical ex
                                             RegExp(r"align\*"),
                                             (match) => "aligned");
                                       },
+                                      imageBuilder: (context, url) {
+                                        return Image.network(
+                                          url,
+                                          width: 100,
+                                          height: 100,
+                                        );
+                                      },
                                       latexBuilder:
-                                          (contex, tex, textStyle, inline) {
+                                          (context, tex, textStyle, inline) {
                                         if (tex.contains(r"\begin{tabular}")) {
                                           // return table.
                                           String tableString = "|${(RegExp(

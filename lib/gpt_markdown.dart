@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gpt_markdown/custom_widgets/markdow_config.dart';
+import 'package:gpt_markdown/custom_widgets/markdown_config.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
@@ -28,6 +28,7 @@ class GptMarkdown extends StatelessWidget {
     this.textDirection = TextDirection.ltr,
     this.latexWorkaround,
     this.textAlign,
+    this.imageBuilder,
     this.textScaler,
     this.onLinkTab,
     this.latexBuilder,
@@ -72,6 +73,7 @@ class GptMarkdown extends StatelessWidget {
     TextStyle style,
   )?
   linkBuilder;
+  final Widget Function(BuildContext, String imageUrl)? imageBuilder;
   String _removeExtraLinesInsideBlockLatex(String text) {
     return text.replaceAllMapped(
       RegExp(r"\\\[(.*?)\\\]", multiLine: true, dotAll: true),
@@ -120,6 +122,7 @@ class GptMarkdown extends StatelessWidget {
           sourceTagBuilder: sourceTagBuilder,
           highlightBuilder: highlightBuilder,
           linkBuilder: linkBuilder,
+          imageBuilder: imageBuilder,
         ),
       ),
     );
