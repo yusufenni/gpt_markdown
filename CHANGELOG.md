@@ -1,3 +1,7 @@
+## 1.0.13
+
+* Fixed issue [#49](https://github.com/Infinitix-LLC/gpt_markdown/issues/49).
+
 ## 1.0.12
 
 * imageBuilder parameter added.

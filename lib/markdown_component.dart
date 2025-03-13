@@ -7,6 +7,7 @@ abstract class MarkdownComponent {
     NewLines(),
     IndentMd(),
     ImageMd(),
+    ATagMd(),
     TableMd(),
     HTag(),
     UnOrderedList(),
@@ -14,14 +15,13 @@ abstract class MarkdownComponent {
     RadioButtonMd(),
     CheckBoxMd(),
     HrLine(),
+    StrikeMd(),
+    BoldMd(),
+    ItalicMd(),
     LatexMath(),
     LatexMathMultiLine(),
     ImageMd(),
     HighlightedText(),
-    StrikeMd(),
-    BoldMd(),
-    ItalicMd(),
-    ATagMd(),
     SourceTag(),
   ];
 
@@ -44,7 +44,13 @@ abstract class MarkdownComponent {
       onMatch: (p0) {
         String element = p0[0] ?? "";
         for (var each in components) {
-          if (each.exp.hasMatch(element)) {
+          var p = each.exp.pattern;
+          var exp = RegExp(
+            '^$p',
+            multiLine: each.exp.isMultiLine,
+            dotAll: each.exp.isDotAll,
+          );
+          if (exp.hasMatch(element)) {
             if (each.inline) {
               spans.add(each.span(context, element, config));
             } else {
@@ -127,7 +133,7 @@ abstract class BlockMd extends MarkdownComponent {
     var child = build(context, text, config);
     length = min(length, 4);
     if (length > 0) {
-      child = UnorderedListView(spacing: length * 6.0, child: child);
+      child = UnorderedListView(spacing: length * 1.0, child: child);
     }
     return WidgetSpan(child: child, alignment: PlaceholderAlignment.middle);
   }
@@ -420,6 +426,7 @@ class BoldMd extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text.trim());
+    print(match);
     var conf = config.copyWith(
       style:
           config.style?.copyWith(fontWeight: FontWeight.bold) ??
