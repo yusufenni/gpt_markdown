@@ -2,7 +2,7 @@ part of 'gpt_markdown.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static List<MarkdownComponent> get components => [
+  static final List<MarkdownComponent> components = [
     CodeBlockMd(),
     NewLines(),
     IndentMd(),
@@ -332,7 +332,11 @@ class UnOrderedList extends BlockMd {
 
     var child = MdWidget("${match?[1]?.trim()}", config: config);
 
-    return config.unOrderedListBuilder?.call(context, child, config) ??
+    return config.unOrderedListBuilder?.call(
+          context,
+          child,
+          config.copyWith(),
+        ) ??
         UnorderedListView(
           bulletColor:
               (config.style?.color ?? DefaultTextStyle.of(context).style.color),

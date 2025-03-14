@@ -1,3 +1,7 @@
+## 1.0.15
+
+* Performance improvements.
+
 ## 1.0.14
 
 * Added `orderedListBuilder` and `unOrderedListBuilder` parameters to customize list rendering.
