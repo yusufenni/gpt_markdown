@@ -1,5 +1,60 @@
 import 'package:flutter/material.dart';
 
+/// A builder function for the ordered list.
+typedef OrderedListBuilder =
+    Widget Function(
+      BuildContext context,
+      String no,
+      Widget child,
+      GptMarkdownConfig config,
+    );
+
+/// A builder function for the unordered list.
+typedef UnOrderedListBuilder =
+    Widget Function(
+      BuildContext context,
+      Widget child,
+      GptMarkdownConfig config,
+    );
+
+/// A builder function for the source tag.
+typedef SourceTagBuilder =
+    Widget Function(BuildContext context, String content, TextStyle textStyle);
+
+/// A builder function for the code block.
+typedef CodeBlockBuilder =
+    Widget Function(
+      BuildContext context,
+      String name,
+      String code,
+      bool closed,
+    );
+
+/// A builder function for the LaTeX.
+typedef LatexBuilder =
+    Widget Function(
+      BuildContext context,
+      String tex,
+      TextStyle textStyle,
+      bool inline,
+    );
+
+/// A builder function for the link.
+typedef LinkBuilder =
+    Widget Function(
+      BuildContext context,
+      String text,
+      String url,
+      TextStyle style,
+    );
+
+/// A builder function for the highlight.
+typedef HighlightBuilder =
+    Widget Function(BuildContext context, String text, TextStyle style);
+
+/// A builder function for the image.
+typedef ImageBuilder = Widget Function(BuildContext context, String imageUrl);
+
 /// A configuration class for the GPT Markdown component.
 ///
 /// The [GptMarkdownConfig] class is used to configure the GPT Markdown component.
@@ -19,6 +74,8 @@ class GptMarkdownConfig {
     this.codeBuilder,
     this.sourceTagBuilder,
     this.highlightBuilder,
+    this.orderedListBuilder,
+    this.unOrderedListBuilder,
     this.linkBuilder,
     this.imageBuilder,
     this.maxLines,
@@ -44,33 +101,22 @@ class GptMarkdownConfig {
   final String Function(String tex)? latexWorkaround;
 
   /// The LaTeX builder.
-  final Widget Function(
-    BuildContext context,
-    String tex,
-    TextStyle textStyle,
-    bool inline,
-  )?
-  latexBuilder;
+  final LatexBuilder? latexBuilder;
 
   /// The source tag builder.
-  final Widget Function(
-    BuildContext context,
-    String content,
-    TextStyle textStyle,
-  )?
-  sourceTagBuilder;
+  final SourceTagBuilder? sourceTagBuilder;
 
   /// Whether to follow the link color.
   final bool followLinkColor;
 
   /// The code builder.
-  final Widget Function(
-    BuildContext context,
-    String name,
-    String code,
-    bool closed,
-  )?
-  codeBuilder;
+  final CodeBlockBuilder? codeBuilder;
+
+  /// The Ordered List builder.
+  final OrderedListBuilder? orderedListBuilder;
+
+  /// The Unordered List builder.
+  final UnOrderedListBuilder? unOrderedListBuilder;
 
   /// The maximum number of lines.
   final int? maxLines;
@@ -79,18 +125,13 @@ class GptMarkdownConfig {
   final TextOverflow? overflow;
 
   /// The highlight builder.
-  final Widget Function(BuildContext context, String text, TextStyle style)?
-  highlightBuilder;
-  final Widget Function(
-    BuildContext context,
-    String text,
-    String url,
-    TextStyle style,
-  )?
-  linkBuilder;
+  final HighlightBuilder? highlightBuilder;
+
+  /// The link builder.
+  final LinkBuilder? linkBuilder;
 
   /// The image builder.
-  final Widget Function(BuildContext, String imageUrl)? imageBuilder;
+  final ImageBuilder? imageBuilder;
 
   /// A copy of the configuration with the specified parameters.
   GptMarkdownConfig copyWith({
@@ -100,39 +141,17 @@ class GptMarkdownConfig {
     final TextAlign? textAlign,
     final TextScaler? textScaler,
     final String Function(String tex)? latexWorkaround,
-    final Widget Function(
-      BuildContext context,
-      String tex,
-      TextStyle textStyle,
-      bool inline,
-    )?
-    latexBuilder,
-    final Widget Function(
-      BuildContext context,
-      String content,
-      TextStyle textStyle,
-    )?
-    sourceTagBuilder,
-    bool? followLinkColor,
-    final Widget Function(
-      BuildContext context,
-      String name,
-      String code,
-      bool closed,
-    )?
-    codeBuilder,
+    final LatexBuilder? latexBuilder,
+    final SourceTagBuilder? sourceTagBuilder,
+    final bool? followLinkColor,
+    final CodeBlockBuilder? codeBuilder,
     final int? maxLines,
     final TextOverflow? overflow,
-    final Widget Function(BuildContext context, String text, TextStyle style)?
-    highlightBuilder,
-    final Widget Function(
-      BuildContext context,
-      String text,
-      String url,
-      TextStyle style,
-    )?
-    linkBuilder,
-    final Widget Function(BuildContext, String imageUrl)? imageBuilder,
+    final HighlightBuilder? highlightBuilder,
+    final LinkBuilder? linkBuilder,
+    final ImageBuilder? imageBuilder,
+    final OrderedListBuilder? orderedListBuilder,
+    final UnOrderedListBuilder? unOrderedListBuilder,
   }) {
     return GptMarkdownConfig(
       style: style ?? this.style,
@@ -150,6 +169,8 @@ class GptMarkdownConfig {
       highlightBuilder: highlightBuilder ?? this.highlightBuilder,
       linkBuilder: linkBuilder ?? this.linkBuilder,
       imageBuilder: imageBuilder ?? this.imageBuilder,
+      orderedListBuilder: orderedListBuilder ?? this.orderedListBuilder,
+      unOrderedListBuilder: unOrderedListBuilder ?? this.unOrderedListBuilder,
     );
   }
 

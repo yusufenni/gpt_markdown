@@ -329,26 +329,30 @@ class UnOrderedList extends BlockMd {
     final GptMarkdownConfig config,
   ) {
     var match = this.exp.firstMatch(text);
-    return UnorderedListView(
-      bulletColor:
-          (config.style?.color ?? DefaultTextStyle.of(context).style.color),
-      padding: 7,
-      spacing: 10,
-      bulletSize:
-          0.3 *
-          (config.style?.fontSize ??
-              DefaultTextStyle.of(context).style.fontSize ??
-              kDefaultFontSize),
-      textDirection: config.textDirection,
-      child: MdWidget("${match?[1]?.trim()}", config: config),
-    );
+
+    var child = MdWidget("${match?[1]?.trim()}", config: config);
+
+    return config.unOrderedListBuilder?.call(context, child, config) ??
+        UnorderedListView(
+          bulletColor:
+              (config.style?.color ?? DefaultTextStyle.of(context).style.color),
+          padding: 7,
+          spacing: 10,
+          bulletSize:
+              0.3 *
+              (config.style?.fontSize ??
+                  DefaultTextStyle.of(context).style.fontSize ??
+                  kDefaultFontSize),
+          textDirection: config.textDirection,
+          child: child,
+        );
   }
 }
 
 /// Ordered list component
 class OrderedList extends BlockMd {
   @override
-  String get expString => (r"([0-9]+\.)\ ([^\n]+)$");
+  String get expString => (r"([0-9]+)\.\ ([^\n]+)$");
 
   @override
   Widget build(
@@ -357,14 +361,24 @@ class OrderedList extends BlockMd {
     final GptMarkdownConfig config,
   ) {
     var match = this.exp.firstMatch(text.trim());
-    return OrderedListView(
-      no: "${match?[1]}",
-      textDirection: config.textDirection,
-      style: (config.style ?? const TextStyle()).copyWith(
-        fontWeight: FontWeight.w100,
-      ),
-      child: MdWidget("${match?[2]?.trim()}", config: config),
-    );
+
+    var no = "${match?[1]}";
+
+    var child = MdWidget("${match?[2]?.trim()}", config: config);
+    return config.orderedListBuilder?.call(
+          context,
+          no,
+          child,
+          config.copyWith(),
+        ) ??
+        OrderedListView(
+          no: "$no.",
+          textDirection: config.textDirection,
+          style: (config.style ?? const TextStyle()).copyWith(
+            fontWeight: FontWeight.w100,
+          ),
+          child: child,
+        );
   }
 }
 
@@ -426,7 +440,6 @@ class BoldMd extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text.trim());
-    print(match);
     var conf = config.copyWith(
       style:
           config.style?.copyWith(fontWeight: FontWeight.bold) ??

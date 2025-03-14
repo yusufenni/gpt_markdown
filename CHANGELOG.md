@@ -1,3 +1,7 @@
+## 1.0.14
+
+* Added `orderedListBuilder` and `unOrderedListBuilder` parameters to customize list rendering.
+
 ## 1.0.13
 
 * Fixed issue [#49](https://github.com/Infinitix-LLC/gpt_markdown/issues/49).

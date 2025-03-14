@@ -38,6 +38,8 @@ class GptMarkdown extends StatelessWidget {
     this.linkBuilder,
     this.maxLines,
     this.overflow,
+    this.orderedListBuilder,
+    this.unOrderedListBuilder,
   });
 
   /// The direction of the text.
@@ -66,44 +68,31 @@ class GptMarkdown extends StatelessWidget {
   final TextOverflow? overflow;
 
   /// The LaTeX builder.
-  final Widget Function(
-    BuildContext context,
-    String tex,
-    TextStyle style,
-    bool inline,
-  )?
-  latexBuilder;
+  final LatexBuilder? latexBuilder;
 
   /// Whether to follow the link color.
   final bool followLinkColor;
 
   /// The code builder.
-  final Widget Function(
-    BuildContext context,
-    String name,
-    String code,
-    bool closed,
-  )?
-  codeBuilder;
+  final CodeBlockBuilder? codeBuilder;
 
   /// The source tag builder.
-  final Widget Function(BuildContext, String, TextStyle)? sourceTagBuilder;
+  final SourceTagBuilder? sourceTagBuilder;
 
   /// The highlight builder.
-  final Widget Function(BuildContext context, String text, TextStyle style)?
-  highlightBuilder;
+  final HighlightBuilder? highlightBuilder;
 
   /// The link builder.
-  final Widget Function(
-    BuildContext context,
-    String text,
-    String url,
-    TextStyle style,
-  )?
-  linkBuilder;
+  final LinkBuilder? linkBuilder;
 
   /// The image builder.
-  final Widget Function(BuildContext, String imageUrl)? imageBuilder;
+  final ImageBuilder? imageBuilder;
+
+  /// The ordered list builder.
+  final OrderedListBuilder? orderedListBuilder;
+
+  /// The unordered list builder.
+  final UnOrderedListBuilder? unOrderedListBuilder;
 
   /// A method to remove extra lines inside block LaTeX.
   String _removeExtraLinesInsideBlockLatex(String text) {
@@ -155,6 +144,8 @@ class GptMarkdown extends StatelessWidget {
           highlightBuilder: highlightBuilder,
           linkBuilder: linkBuilder,
           imageBuilder: imageBuilder,
+          orderedListBuilder: orderedListBuilder,
+          unOrderedListBuilder: unOrderedListBuilder,
         ),
       ),
     );
