@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 /// A custom widget that adds an indent to the left or right of its child.
 ///
-/// The [IndentWidget] widget is used to create a visual indent in the UI.
+/// The [BlockQuoteWidget] widget is used to create a visual indent in the UI.
 /// It takes a [child] parameter which is the content of the widget,
 /// a [direction] parameter which specifies the direction of the indent,
 /// and a [color] parameter to set the color of the indent.
-class IndentWidget extends StatelessWidget {
-  const IndentWidget({
+class BlockQuoteWidget extends StatelessWidget {
+  const BlockQuoteWidget({
     super.key,
     required this.child,
     required this.direction,

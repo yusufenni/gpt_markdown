@@ -5,7 +5,7 @@ abstract class MarkdownComponent {
   static final List<MarkdownComponent> components = [
     CodeBlockMd(),
     NewLines(),
-    IndentMd(),
+    BlockQuote(),
     ImageMd(),
     ATagMd(),
     TableMd(),
@@ -20,7 +20,20 @@ abstract class MarkdownComponent {
     ItalicMd(),
     LatexMath(),
     LatexMathMultiLine(),
+    HighlightedText(),
+    SourceTag(),
+    IndentMd(),
+  ];
+
+  static final List<MarkdownComponent> inlineComponents = [
     ImageMd(),
+    ATagMd(),
+    TableMd(),
+    StrikeMd(),
+    BoldMd(),
+    ItalicMd(),
+    LatexMath(),
+    LatexMathMultiLine(),
     HighlightedText(),
     SourceTag(),
   ];
@@ -30,10 +43,14 @@ abstract class MarkdownComponent {
     BuildContext context,
     String text,
     final GptMarkdownConfig config,
+    bool includeGlobalComponents,
   ) {
+    var components =
+        includeGlobalComponents
+            ? MarkdownComponent.components
+            : MarkdownComponent.inlineComponents;
     List<InlineSpan> spans = [];
-    List<String> regexes =
-        components.map<String>((e) => e.exp.pattern).toList();
+    Iterable<String> regexes = components.map<String>((e) => e.exp.pattern);
     final combinedRegex = RegExp(
       regexes.join("|"),
       multiLine: true,
@@ -46,7 +63,7 @@ abstract class MarkdownComponent {
         for (var each in components) {
           var p = each.exp.pattern;
           var exp = RegExp(
-            '^$p',
+            '^$p\$',
             multiLine: each.exp.isMultiLine,
             dotAll: each.exp.isDotAll,
           );
@@ -133,7 +150,11 @@ abstract class BlockMd extends MarkdownComponent {
     var child = build(context, text, config);
     length = min(length, 4);
     if (length > 0) {
-      child = UnorderedListView(spacing: length * 1.0, child: child);
+      child = UnorderedListView(
+        spacing: length * 1.0,
+        textDirection: config.textDirection,
+        child: child,
+      );
     }
     return WidgetSpan(child: child, alignment: PlaceholderAlignment.middle);
   }
@@ -143,6 +164,40 @@ abstract class BlockMd extends MarkdownComponent {
     String text,
     final GptMarkdownConfig config,
   );
+}
+
+/// Indent component
+class IndentMd extends BlockMd {
+  @override
+  String get expString => (r"^(\ \ +)([^\n]+)$");
+  @override
+  Widget build(
+    BuildContext context,
+    String text,
+    final GptMarkdownConfig config,
+  ) {
+    var match = this.exp.firstMatch(text);
+    var conf = config.copyWith();
+    return Directionality(
+      textDirection: config.textDirection,
+      child: Row(
+        children: [
+          Expanded(
+            child: config.getRich(
+              TextSpan(
+                children: MarkdownComponent.generate(
+                  context,
+                  match?[2]?.trim() ?? "",
+                  conf,
+                  false,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Heading component
@@ -174,6 +229,7 @@ class HTag extends BlockMd {
             context,
             "${match.namedGroup('data')}",
             conf,
+            false,
           )),
           if (match.namedGroup('hash')!.length == 1) ...[
             const TextSpan(
@@ -205,8 +261,12 @@ class NewLines extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     return TextSpan(
-      text: "\n\n\n\n",
-      style: TextStyle(fontSize: 6, color: config.style?.color),
+      text: "\n\n",
+      style: TextStyle(
+        fontSize: config.style?.fontSize ?? 14,
+        height: 1.15,
+        color: config.style?.color,
+      ),
     );
   }
 }
@@ -246,7 +306,7 @@ class CheckBoxMd extends BlockMd {
     return CustomCb(
       value: ("${match?[1]}" == "x"),
       textDirection: config.textDirection,
-      child: MdWidget("${match?[2]}", config: config),
+      child: MdWidget("${match?[2]}", false, config: config),
     );
   }
 }
@@ -267,13 +327,13 @@ class RadioButtonMd extends BlockMd {
     return CustomRb(
       value: ("${match?[1]}" == "x"),
       textDirection: config.textDirection,
-      child: MdWidget("${match?[2]}", config: config),
+      child: MdWidget("${match?[2]}", false, config: config),
     );
   }
 }
 
-/// Indent
-class IndentMd extends InlineMd {
+/// Block quote component
+class BlockQuote extends InlineMd {
   @override
   bool get inline => false;
   @override
@@ -292,7 +352,7 @@ class IndentMd extends InlineMd {
     // data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
     data = data.trim();
     var child = TextSpan(
-      children: MarkdownComponent.generate(context, data, config),
+      children: MarkdownComponent.generate(context, data, config, true),
     );
     return TextSpan(
       children: [
@@ -301,7 +361,7 @@ class IndentMd extends InlineMd {
             textDirection: config.textDirection,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
-              child: IndentWidget(
+              child: BlockQuoteWidget(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 direction: config.textDirection,
                 child: Padding(
@@ -330,7 +390,7 @@ class UnOrderedList extends BlockMd {
   ) {
     var match = this.exp.firstMatch(text);
 
-    var child = MdWidget("${match?[1]?.trim()}", config: config);
+    var child = MdWidget("${match?[1]?.trim()}", false, config: config);
 
     return config.unOrderedListBuilder?.call(
           context,
@@ -368,7 +428,7 @@ class OrderedList extends BlockMd {
 
     var no = "${match?[1]}";
 
-    var child = MdWidget("${match?[2]?.trim()}", config: config);
+    var child = MdWidget("${match?[2]?.trim()}", false, config: config);
     return config.orderedListBuilder?.call(
           context,
           no,
@@ -450,7 +510,12 @@ class BoldMd extends InlineMd {
           const TextStyle(fontWeight: FontWeight.bold),
     );
     return TextSpan(
-      children: MarkdownComponent.generate(context, "${match?[1]}", conf),
+      children: MarkdownComponent.generate(
+        context,
+        "${match?[1]}",
+        conf,
+        false,
+      ),
       style: conf.style,
     );
   }
@@ -476,7 +541,12 @@ class StrikeMd extends InlineMd {
           const TextStyle(decoration: TextDecoration.lineThrough),
     );
     return TextSpan(
-      children: MarkdownComponent.generate(context, "${match?[1]}", conf),
+      children: MarkdownComponent.generate(
+        context,
+        "${match?[1]}",
+        conf,
+        false,
+      ),
       style: conf.style,
     );
   }
@@ -504,7 +574,7 @@ class ItalicMd extends InlineMd {
       ),
     );
     return TextSpan(
-      children: MarkdownComponent.generate(context, "$data", conf),
+      children: MarkdownComponent.generate(context, "$data", conf, false),
       style: conf.style,
     );
   }
@@ -898,6 +968,7 @@ class TableMd extends BlockMd {
                             ),
                             child: MdWidget(
                               (e[index] ?? "").trim(),
+                              false,
                               config: config,
                             ),
                           ),

@@ -2,10 +2,18 @@ part of 'gpt_markdown.dart';
 
 /// It creates a markdown widget closed to each other.
 class MdWidget extends StatelessWidget {
-  const MdWidget(this.exp, {super.key, required this.config});
+  const MdWidget(
+    this.exp,
+    this.includeGlobalComponents, {
+    super.key,
+    required this.config,
+  });
 
   /// The expression to be displayed.
   final String exp;
+
+  /// Whether to include global components.
+  final bool includeGlobalComponents;
 
   /// The configuration of the markdown widget.
   final GptMarkdownConfig config;
@@ -28,6 +36,7 @@ class MdWidget extends StatelessWidget {
         //   return "\\[$body\\]";
         // }),
         config,
+        includeGlobalComponents,
       ),
     );
     return config.getRich(

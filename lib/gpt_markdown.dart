@@ -128,6 +128,7 @@ class GptMarkdown extends StatelessWidget {
     return ClipRRect(
       child: MdWidget(
         tex,
+        true,
         config: GptMarkdownConfig(
           textDirection: textDirection,
           style: style,

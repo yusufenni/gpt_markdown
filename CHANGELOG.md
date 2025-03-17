@@ -1,3 +1,7 @@
+## 1.0.16
+
+* `IndentMd` and `BlockQuote` fixed.
+
 ## 1.0.15
 
 * Performance improvements.
