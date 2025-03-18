@@ -95,15 +95,15 @@ class GptMarkdown extends StatelessWidget {
   final UnOrderedListBuilder? unOrderedListBuilder;
 
   /// A method to remove extra lines inside block LaTeX.
-  String _removeExtraLinesInsideBlockLatex(String text) {
-    return text.replaceAllMapped(
-      RegExp(r"\\\[(.*?)\\\]", multiLine: true, dotAll: true),
-      (match) {
-        String content = match[0] ?? "";
-        return content.replaceAllMapped(RegExp(r"\n[\n\ ]+"), (match) => "\n");
-      },
-    );
-  }
+  // String _removeExtraLinesInsideBlockLatex(String text) {
+  //   return text.replaceAllMapped(
+  //     RegExp(r"\\\[(.*?)\\\]", multiLine: true, dotAll: true),
+  //     (match) {
+  //       String content = match[0] ?? "";
+  //       return content.replaceAllMapped(RegExp(r"\n[\n\ ]+"), (match) => "\n");
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class GptMarkdown extends StatelessWidget {
         },
       );
     }
-    tex = _removeExtraLinesInsideBlockLatex(tex);
+    // tex = _removeExtraLinesInsideBlockLatex(tex);
     return ClipRRect(
       child: MdWidget(
         tex,

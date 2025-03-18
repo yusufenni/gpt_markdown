@@ -20,24 +20,21 @@ class MdWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<InlineSpan> list = [];
-    list.addAll(
-      MarkdownComponent.generate(
-        context,
-        exp,
-        // .replaceAllMapped(
-        //     RegExp(
-        //       r"\\\[(.*?)\\\]|(\\begin.*?\\end{.*?})",
-        //       multiLine: true,
-        //       dotAll: true,
-        //     ), (match) {
-        //   //
-        //   String body = (match[1] ?? match[2])?.replaceAll("\n", " ") ?? "";
-        //   return "\\[$body\\]";
-        // }),
-        config,
-        includeGlobalComponents,
-      ),
+    List<InlineSpan> list = MarkdownComponent.generate(
+      context,
+      exp,
+      // .replaceAllMapped(
+      //     RegExp(
+      //       r"\\\[(.*?)\\\]|(\\begin.*?\\end{.*?})",
+      //       multiLine: true,
+      //       dotAll: true,
+      //     ), (match) {
+      //   //
+      //   String body = (match[1] ?? match[2])?.replaceAll("\n", " ") ?? "";
+      //   return "\\[$body\\]";
+      // }),
+      config,
+      includeGlobalComponents,
     );
     return config.getRich(
       TextSpan(children: list, style: config.style?.copyWith()),

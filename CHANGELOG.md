@@ -1,6 +1,7 @@
 ## 1.0.16
 
 * `IndentMd` and `BlockQuote` fixed.
+* Baseline of bloc type component is fixed.
 
 ## 1.0.15
 

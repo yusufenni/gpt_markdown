@@ -2,7 +2,7 @@ part of 'gpt_markdown.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static final List<MarkdownComponent> components = [
+  static List<MarkdownComponent> get components => [
     CodeBlockMd(),
     NewLines(),
     BlockQuote(),
@@ -25,7 +25,7 @@ abstract class MarkdownComponent {
     IndentMd(),
   ];
 
-  static final List<MarkdownComponent> inlineComponents = [
+  static List<MarkdownComponent> get inlineComponents => [
     ImageMd(),
     ATagMd(),
     TableMd(),
@@ -68,29 +68,7 @@ abstract class MarkdownComponent {
             dotAll: each.exp.isDotAll,
           );
           if (exp.hasMatch(element)) {
-            if (each.inline) {
-              spans.add(each.span(context, element, config));
-            } else {
-              spans.addAll([
-                TextSpan(
-                  text: "\n ",
-                  style: TextStyle(
-                    fontSize: 0,
-                    height: 0,
-                    color: config.style?.color,
-                  ),
-                ),
-                each.span(context, element, config),
-                TextSpan(
-                  text: "\n ",
-                  style: TextStyle(
-                    fontSize: 0,
-                    height: 0,
-                    color: config.style?.color,
-                  ),
-                ),
-              ]);
-            }
+            spans.add(each.span(context, element, config));
             return "";
           }
         }
@@ -156,7 +134,12 @@ abstract class BlockMd extends MarkdownComponent {
         child: child,
       );
     }
-    return WidgetSpan(child: child, alignment: PlaceholderAlignment.middle);
+    child = Row(children: [Expanded(child: child)]);
+    return WidgetSpan(
+      child: child,
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+    );
   }
 
   Widget build(
@@ -293,7 +276,7 @@ class HrLine extends BlockMd {
 /// Checkbox component
 class CheckBoxMd extends BlockMd {
   @override
-  String get expString => (r"\[(\x?)\]\ (\S[^\n]*?)$");
+  String get expString => (r"\[((?:\x|\ ))\]\ (\S[^\n]*?)$");
   get onLinkTab => null;
 
   @override
@@ -314,7 +297,7 @@ class CheckBoxMd extends BlockMd {
 /// Radio Button component
 class RadioButtonMd extends BlockMd {
   @override
-  String get expString => (r"\((\x?)\)\ (\S[^\n]*)$");
+  String get expString => (r"\(((?:\x|\ ))\)\ (\S[^\n]*)$");
   get onLinkTab => null;
 
   @override
@@ -390,7 +373,7 @@ class UnOrderedList extends BlockMd {
   ) {
     var match = this.exp.firstMatch(text);
 
-    var child = MdWidget("${match?[1]?.trim()}", false, config: config);
+    var child = MdWidget("${match?[1]?.trim()}", true, config: config);
 
     return config.unOrderedListBuilder?.call(
           context,
@@ -428,7 +411,7 @@ class OrderedList extends BlockMd {
 
     var no = "${match?[1]}";
 
-    var child = MdWidget("${match?[2]?.trim()}", false, config: config);
+    var child = MdWidget("${match?[2]?.trim()}", true, config: config);
     return config.orderedListBuilder?.call(
           context,
           no,
@@ -582,7 +565,8 @@ class ItalicMd extends InlineMd {
 
 class LatexMathMultiLine extends BlockMd {
   @override
-  String get expString => (r"\\\[(((?!\n\n).)*?)\\\]|(\\begin.*?\\end{.*?})");
+  String get expString => (r"\ *\\\[((?:.)*?)\\\]|(\ *\\begin.*?\\end{.*?})");
+  // (r"\ *\\\[((?:(?!\n\n\n).)*?)\\\]|(\\begin.*?\\end{.*?})");
   @override
   RegExp get exp => RegExp(expString, dotAll: true, multiLine: true);
 
@@ -593,7 +577,7 @@ class LatexMathMultiLine extends BlockMd {
     final GptMarkdownConfig config,
   ) {
     var p0 = exp.firstMatch(text.trim());
-    String mathText = p0?[1] ?? p0?[2] ?? "";
+    String mathText = p0?[1] ?? p0?[2] ?? '';
     var workaround = config.latexWorkaround ?? (String tex) => tex;
 
     var builder =
