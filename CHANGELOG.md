@@ -3,6 +3,8 @@
 * `IndentMd` and `BlockQuote` fixed.
 * Baseline of bloc type component is fixed.
 * block quote support improved.
+* custom components support added.
+* `Table` syntax improved.
 
 ## 1.0.15
 

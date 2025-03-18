@@ -21,15 +21,16 @@ A comprehensive Flutter package for rendering rich Markdown and LaTeX content in
 | ➖ Horizontal Line | ✅ |  |
 | 🔢 Latex Math | ✅ |  |
 | ↩️ Indent | ✅ |
+| ↩️ BlockQuote | ✅ |
 | 🖼️ Image | ✅ |
 | ✨ Highlighted Text | ✅ |
-| ✂️ Striked Text | ✅ |
+| ✂️ Strike Text | ✅ |
 | 🔵 Bold Text | ✅ |
 | 📜 Italic Text | ✅ |
 | 🔗 Links | ✅ |
 | 📱 Selectable | ✅ |
+| 🧩 Custom components | ✅ |  |
 | 📎 Underline |  | 🔜 |
-| 🧩 Custom components |  | 🔜 |
 
 ## ✨ Key Features
 

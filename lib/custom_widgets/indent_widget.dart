@@ -31,7 +31,7 @@ class BlockQuoteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
+        Flexible(
           child: CustomPaint(
             foregroundPainter: BlockQuotePainter(color, direction, width),
             child: child,

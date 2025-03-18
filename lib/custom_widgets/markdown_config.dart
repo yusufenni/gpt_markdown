@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
 
 /// A builder function for the ordered list.
 typedef OrderedListBuilder =
@@ -80,6 +81,8 @@ class GptMarkdownConfig {
     this.imageBuilder,
     this.maxLines,
     this.overflow,
+    this.components,
+    this.inlineComponents,
   });
 
   /// The direction of the text.
@@ -133,6 +136,12 @@ class GptMarkdownConfig {
   /// The image builder.
   final ImageBuilder? imageBuilder;
 
+  /// The list of components.
+  final List<MarkdownComponent>? components;
+
+  /// The list of inline components.
+  final List<MarkdownComponent>? inlineComponents;
+
   /// A copy of the configuration with the specified parameters.
   GptMarkdownConfig copyWith({
     TextStyle? style,
@@ -152,6 +161,8 @@ class GptMarkdownConfig {
     final ImageBuilder? imageBuilder,
     final OrderedListBuilder? orderedListBuilder,
     final UnOrderedListBuilder? unOrderedListBuilder,
+    final List<MarkdownComponent>? components,
+    final List<MarkdownComponent>? inlineComponents,
   }) {
     return GptMarkdownConfig(
       style: style ?? this.style,
@@ -171,6 +182,8 @@ class GptMarkdownConfig {
       imageBuilder: imageBuilder ?? this.imageBuilder,
       orderedListBuilder: orderedListBuilder ?? this.orderedListBuilder,
       unOrderedListBuilder: unOrderedListBuilder ?? this.unOrderedListBuilder,
+      components: components ?? this.components,
+      inlineComponents: inlineComponents ?? this.inlineComponents,
     );
   }
 

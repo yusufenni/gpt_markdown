@@ -2,7 +2,7 @@ part of 'gpt_markdown.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static List<MarkdownComponent> get components => [
+  static final List<MarkdownComponent> components = [
     CodeBlockMd(),
     NewLines(),
     BlockQuote(),
@@ -25,7 +25,7 @@ abstract class MarkdownComponent {
     IndentMd(),
   ];
 
-  static List<MarkdownComponent> get inlineComponents => [
+  static final List<MarkdownComponent> inlineComponents = [
     ImageMd(),
     ATagMd(),
     TableMd(),
@@ -47,8 +47,8 @@ abstract class MarkdownComponent {
   ) {
     var components =
         includeGlobalComponents
-            ? MarkdownComponent.components
-            : MarkdownComponent.inlineComponents;
+            ? config.components ?? MarkdownComponent.components
+            : config.inlineComponents ?? MarkdownComponent.inlineComponents;
     List<InlineSpan> spans = [];
     Iterable<String> regexes = components.map<String>((e) => e.exp.pattern);
     final combinedRegex = RegExp(
@@ -134,7 +134,7 @@ abstract class BlockMd extends MarkdownComponent {
         child: child,
       );
     }
-    child = Row(children: [Expanded(child: child)]);
+    child = Row(children: [Flexible(child: child)]);
     return WidgetSpan(
       child: child,
       alignment: PlaceholderAlignment.baseline,
@@ -165,7 +165,7 @@ class IndentMd extends BlockMd {
       textDirection: config.textDirection,
       child: Row(
         children: [
-          Expanded(
+          Flexible(
             child: config.getRich(
               TextSpan(
                 children: MarkdownComponent.generate(
@@ -322,7 +322,11 @@ class BlockQuote extends InlineMd {
   @override
   RegExp get exp =>
   // RegExp(r"(?<=\n\n)(\ +)(.+?)(?=\n\n)", dotAll: true, multiLine: true);
-  RegExp(r"(?:(?:^|\n)\ *>[^\n]+)+", dotAll: true, multiLine: true);
+  RegExp(
+    r"(?:(?:^)\ *>[^\n]+)(?:(?:\n)\ *>[^\n]+)*",
+    dotAll: true,
+    multiLine: true,
+  );
 
   @override
   InlineSpan span(

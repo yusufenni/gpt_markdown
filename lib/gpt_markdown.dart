@@ -40,6 +40,8 @@ class GptMarkdown extends StatelessWidget {
     this.overflow,
     this.orderedListBuilder,
     this.unOrderedListBuilder,
+    this.components,
+    this.inlineComponents,
   });
 
   /// The direction of the text.
@@ -94,6 +96,50 @@ class GptMarkdown extends StatelessWidget {
   /// The unordered list builder.
   final UnOrderedListBuilder? unOrderedListBuilder;
 
+  /// The list of components.
+  ///  ```dart
+  /// List<MarkdownComponent> components = [
+  ///   CodeBlockMd(),
+  ///   NewLines(),
+  ///   BlockQuote(),
+  ///   ImageMd(),
+  ///   ATagMd(),
+  ///   TableMd(),
+  ///   HTag(),
+  ///   UnOrderedList(),
+  ///   OrderedList(),
+  ///   RadioButtonMd(),
+  ///   CheckBoxMd(),
+  ///   HrLine(),
+  ///   StrikeMd(),
+  ///   BoldMd(),
+  ///   ItalicMd(),
+  ///   LatexMath(),
+  ///   LatexMathMultiLine(),
+  ///   HighlightedText(),
+  ///   SourceTag(),
+  ///   IndentMd(),
+  /// ];
+  /// ```
+  final List<MarkdownComponent>? components;
+
+  /// The list of inline components.
+  ///  ```dart
+  /// List<MarkdownComponent> inlineComponents = [
+  ///   ImageMd(),
+  ///   ATagMd(),
+  ///   TableMd(),
+  ///   StrikeMd(),
+  ///   BoldMd(),
+  ///   ItalicMd(),
+  ///   LatexMath(),
+  ///   LatexMathMultiLine(),
+  ///   HighlightedText(),
+  ///   SourceTag(),
+  /// ];
+  /// ```
+  final List<MarkdownComponent>? inlineComponents;
+
   /// A method to remove extra lines inside block LaTeX.
   // String _removeExtraLinesInsideBlockLatex(String text) {
   //   return text.replaceAllMapped(
@@ -147,6 +193,8 @@ class GptMarkdown extends StatelessWidget {
           imageBuilder: imageBuilder,
           orderedListBuilder: orderedListBuilder,
           unOrderedListBuilder: unOrderedListBuilder,
+          components: components,
+          inlineComponents: inlineComponents,
         ),
       ),
     );
