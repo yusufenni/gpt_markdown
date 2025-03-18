@@ -322,7 +322,7 @@ class BlockQuote extends InlineMd {
   @override
   RegExp get exp =>
   // RegExp(r"(?<=\n\n)(\ +)(.+?)(?=\n\n)", dotAll: true, multiLine: true);
-  RegExp(r"^>([^\n]+)$", dotAll: true, multiLine: true);
+  RegExp(r"(?:(?:^|\n)\ *>[^\n]+)+", dotAll: true, multiLine: true);
 
   @override
   InlineSpan span(
@@ -331,9 +331,20 @@ class BlockQuote extends InlineMd {
     final GptMarkdownConfig config,
   ) {
     var match = exp.firstMatch(text);
-    var data = "${match?[1]}".trim();
-    // data = data.replaceAll(RegExp(r'\n\ {' '$spaces' '}'), '\n').trim();
-    data = data.trim();
+    var dataBuilder = StringBuffer();
+    var m = match?[0] ?? '';
+    for (var each in m.split('\n')) {
+      if (each.startsWith(RegExp(r'\ *>'))) {
+        var subString = each.trimLeft().substring(1);
+        if (subString.startsWith(' ')) {
+          subString = subString.substring(1);
+        }
+        dataBuilder.writeln(subString);
+      } else {
+        dataBuilder.writeln(each);
+      }
+    }
+    var data = dataBuilder.toString().trim();
     var child = TextSpan(
       children: MarkdownComponent.generate(context, data, config, true),
     );
@@ -347,8 +358,9 @@ class BlockQuote extends InlineMd {
               child: BlockQuoteWidget(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 direction: config.textDirection,
+                width: 3,
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 10.0),
+                  padding: const EdgeInsetsDirectional.only(start: 8.0),
                   child: config.getRich(child),
                 ),
               ),
@@ -873,7 +885,7 @@ class ImageMd extends InlineMd {
 class TableMd extends BlockMd {
   @override
   String get expString =>
-      (r"(((\|[^\n\|]+\|)((([^\n\|]+\|)+)?))(\n(((\|[^\n\|]+\|)(([^\n\|]+\|)+)?)))+)$");
+      (r"(((\|[^\n\|]+\|)((([^\n\|]+\|)+)?)\ *)(\n\ *(((\|[^\n\|]+\|)(([^\n\|]+\|)+)?))\ *)+)$");
   @override
   Widget build(
     BuildContext context,
@@ -886,6 +898,7 @@ class TableMd extends BlockMd {
             .map<Map<int, String>>(
               (e) =>
                   e
+                      .trim()
                       .split('|')
                       .where((element) => element.isNotEmpty)
                       .toList()
@@ -939,7 +952,7 @@ class TableMd extends BlockMd {
                       children: List.generate(maxCol, (index) {
                         var e = entry.value;
                         String data = e[index] ?? "";
-                        if (RegExp(r"^--+$").hasMatch(data.trim()) ||
+                        if (RegExp(r"^:?--+:?$").hasMatch(data.trim()) ||
                             data.trim().isEmpty) {
                           return const SizedBox();
                         }

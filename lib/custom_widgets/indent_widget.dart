@@ -12,6 +12,7 @@ class BlockQuoteWidget extends StatelessWidget {
     required this.child,
     required this.direction,
     required this.color,
+    this.width = 3,
   });
 
   /// The child widget to be indented.
@@ -23,29 +24,39 @@ class BlockQuoteWidget extends StatelessWidget {
   /// The color of the indent.
   final Color color;
 
+  /// The width of the indent.
+  final double width;
+
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      foregroundPainter: IndentPainter(color, direction),
-      child: child,
+    return Row(
+      children: [
+        Expanded(
+          child: CustomPaint(
+            foregroundPainter: BlockQuotePainter(color, direction, width),
+            child: child,
+          ),
+        ),
+      ],
     );
   }
 }
 
 /// A custom painter that draws an indent on a canvas.
 ///
-/// The [IndentPainter] class extends CustomPainter and is responsible for
+/// The [BlockQuotePainter] class extends CustomPainter and is responsible for
 /// painting the indent on a canvas. It takes a [color] and [direction] parameter
 /// and uses them to draw an indent in the UI.
-class IndentPainter extends CustomPainter {
-  IndentPainter(this.color, this.direction);
+class BlockQuotePainter extends CustomPainter {
+  BlockQuotePainter(this.color, this.direction, this.width);
   final Color color;
   final TextDirection direction;
+  final double width;
   @override
   void paint(Canvas canvas, Size size) {
     var left = direction == TextDirection.ltr;
-    var start = left ? 0.0 : size.width - 4;
-    var rect = Rect.fromLTWH(start, 0, 4, size.height);
+    var start = left ? 0.0 : size.width - width;
+    var rect = Rect.fromLTWH(start, 0, width, size.height);
     var paint = Paint()..color = color;
     canvas.drawRect(rect, paint);
   }

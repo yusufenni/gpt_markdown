@@ -2,6 +2,7 @@
 
 * `IndentMd` and `BlockQuote` fixed.
 * Baseline of bloc type component is fixed.
+* block quote support improved.
 
 ## 1.0.15
 
