@@ -383,8 +383,8 @@ This document was created to test the robustness of Markdown parsers and to ensu
                   Expanded(
                     child: ListView(
                       children: [
-                        AnimatedBuilder(
-                          animation: _controller,
+                        ListenableBuilder(
+                          listenable: _controller,
                           builder: (context, _) {
                             return Container(
                               padding: const EdgeInsets.all(8),

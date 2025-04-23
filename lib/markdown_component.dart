@@ -112,7 +112,8 @@ abstract class BlockMd extends MarkdownComponent {
   bool get inline => false;
 
   @override
-  RegExp get exp => RegExp(r'^\ *?' + expString, dotAll: true, multiLine: true);
+  RegExp get exp =>
+      RegExp(r'^\ *?' + expString + r"$", dotAll: true, multiLine: true);
 
   String get expString;
 
@@ -134,7 +135,10 @@ abstract class BlockMd extends MarkdownComponent {
         child: child,
       );
     }
-    child = Row(children: [Flexible(child: child)]);
+    child = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [Flexible(child: child)],
+    );
     return WidgetSpan(
       child: child,
       alignment: PlaceholderAlignment.baseline,
@@ -164,6 +168,7 @@ class IndentMd extends BlockMd {
     return Directionality(
       textDirection: config.textDirection,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
             child: config.getRich(
@@ -257,7 +262,7 @@ class NewLines extends InlineMd {
 /// Horizontal line component
 class HrLine extends BlockMd {
   @override
-  String get expString => (r"(--)[-]+$");
+  String get expString => (r"⸻|((--)[-]+)$");
   @override
   Widget build(
     BuildContext context,
@@ -554,10 +559,8 @@ class StrikeMd extends InlineMd {
 /// Italic text component
 class ItalicMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(
-    r"(?<!\*)\*(?<!\s)(.+?)(?<!\s)\*(?!\*)|\_(?<!\s)(.+?)(?<!\s)\_",
-    dotAll: true,
-  );
+  RegExp get exp =>
+      RegExp(r"(?:(?<!\*)\*(?<!\s)(.+?)(?<!\s)\*(?!\*))", dotAll: true);
 
   @override
   InlineSpan span(

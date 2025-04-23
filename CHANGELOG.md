@@ -1,3 +1,7 @@
+## 1.0.17
+
+* Bloc components rendering inside table.
+
 ## 1.0.16
 
 * `IndentMd` and `BlockQuote` fixed.

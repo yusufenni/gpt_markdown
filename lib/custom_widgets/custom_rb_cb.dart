@@ -24,6 +24,7 @@ class CustomRb extends StatelessWidget {
     return Directionality(
       textDirection: textDirection,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         textBaseline: TextBaseline.alphabetic,
         crossAxisAlignment: CrossAxisAlignment.baseline,
         children: [
@@ -44,7 +45,7 @@ class CustomRb extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: child),
+          Flexible(child: child),
         ],
       ),
     );
@@ -75,6 +76,7 @@ class CustomCb extends StatelessWidget {
     return Directionality(
       textDirection: textDirection,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         textBaseline: TextBaseline.alphabetic,
         crossAxisAlignment: CrossAxisAlignment.baseline,
         children: [
@@ -90,7 +92,7 @@ class CustomCb extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: child),
+          Flexible(child: child),
         ],
       ),
     );
