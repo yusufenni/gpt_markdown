@@ -42,6 +42,7 @@ class GptMarkdown extends StatelessWidget {
     this.unOrderedListBuilder,
     this.components,
     this.inlineComponents,
+    this.useDollarSignsForLatex = false,
   });
 
   /// The direction of the text.
@@ -95,6 +96,9 @@ class GptMarkdown extends StatelessWidget {
 
   /// The unordered list builder.
   final UnOrderedListBuilder? unOrderedListBuilder;
+
+  /// Whether to use dollar signs for LaTeX.
+  final bool useDollarSignsForLatex;
 
   /// The list of components.
   ///  ```dart
@@ -154,21 +158,23 @@ class GptMarkdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String tex = data.trim();
-    tex = tex.replaceAllMapped(
-      RegExp(r"(?<!\\)\$\$(.*?)(?<!\\)\$\$", dotAll: true),
-      (match) => "\\[${match[1] ?? ""}\\]",
-    );
-    if (!tex.contains(r"\(")) {
+    if (useDollarSignsForLatex) {
       tex = tex.replaceAllMapped(
-        RegExp(r"(?<!\\)\$(.*?)(?<!\\)\$"),
-        (match) => "\\(${match[1] ?? ""}\\)",
+        RegExp(r"(?<!\\)\$\$(.*?)(?<!\\)\$\$", dotAll: true),
+        (match) => "\\[${match[1] ?? ""}\\]",
       );
-      tex = tex.splitMapJoin(
-        RegExp(r"\[.*?\]|\(.*?\)"),
-        onNonMatch: (p0) {
-          return p0.replaceAll("\\\$", "\$");
-        },
-      );
+      if (!tex.contains(r"\(")) {
+        tex = tex.replaceAllMapped(
+          RegExp(r"(?<!\\)\$(.*?)(?<!\\)\$"),
+          (match) => "\\(${match[1] ?? ""}\\)",
+        );
+        tex = tex.splitMapJoin(
+          RegExp(r"\[.*?\]|\(.*?\)"),
+          onNonMatch: (p0) {
+            return p0.replaceAll("\\\$", "\$");
+          },
+        );
+      }
     }
     // tex = _removeExtraLinesInsideBlockLatex(tex);
     return ClipRRect(

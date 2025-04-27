@@ -317,6 +317,7 @@ This document was created to test the robustness of Markdown parsers and to ensu
 
   bool writingMod = true;
   bool selectable = false;
+  bool useDollarSignsForLatex = false;
 
   @override
   Widget build(BuildContext context) {
@@ -328,6 +329,22 @@ This document was created to test the robustness of Markdown parsers and to ensu
         appBar: AppBar(
           title: Text(widget.title),
           actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  useDollarSignsForLatex = !useDollarSignsForLatex;
+                });
+              },
+              icon: Icon(
+                Icons.monetization_on_outlined,
+                color: useDollarSignsForLatex
+                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.38),
+              ),
+            ),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -421,6 +438,8 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                         debugPrint(url);
                                         debugPrint(title);
                                       },
+                                      useDollarSignsForLatex:
+                                          useDollarSignsForLatex,
                                       textAlign: TextAlign.justify,
                                       textScaler: const TextScaler.linear(1),
                                       style: const TextStyle(

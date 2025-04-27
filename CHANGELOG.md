@@ -1,3 +1,7 @@
+## 1.0.18
+
+* dollarSignForLatex is added and by default it is false.
+
 ## 1.0.17
 
 * Bloc components rendering inside table.
