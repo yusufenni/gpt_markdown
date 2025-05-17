@@ -179,6 +179,7 @@ class GptMarkdown extends StatelessWidget {
     // tex = _removeExtraLinesInsideBlockLatex(tex);
     return ClipRRect(
       child: MdWidget(
+        context,
         tex,
         true,
         config: GptMarkdownConfig(

@@ -294,7 +294,7 @@ class CheckBoxMd extends BlockMd {
     return CustomCb(
       value: ("${match?[1]}" == "x"),
       textDirection: config.textDirection,
-      child: MdWidget("${match?[2]}", false, config: config),
+      child: MdWidget(context, "${match?[2]}", false, config: config),
     );
   }
 }
@@ -315,7 +315,7 @@ class RadioButtonMd extends BlockMd {
     return CustomRb(
       value: ("${match?[1]}" == "x"),
       textDirection: config.textDirection,
-      child: MdWidget("${match?[2]}", false, config: config),
+      child: MdWidget(context, "${match?[2]}", false, config: config),
     );
   }
 }
@@ -394,7 +394,7 @@ class UnOrderedList extends BlockMd {
   ) {
     var match = this.exp.firstMatch(text);
 
-    var child = MdWidget("${match?[1]?.trim()}", true, config: config);
+    var child = MdWidget(context, "${match?[1]?.trim()}", true, config: config);
 
     return config.unOrderedListBuilder?.call(
           context,
@@ -432,7 +432,7 @@ class OrderedList extends BlockMd {
 
     var no = "${match?[1]}";
 
-    var child = MdWidget("${match?[2]?.trim()}", true, config: config);
+    var child = MdWidget(context, "${match?[2]?.trim()}", true, config: config);
     return config.orderedListBuilder?.call(
           context,
           no,
@@ -971,6 +971,7 @@ class TableMd extends BlockMd {
                               vertical: 4,
                             ),
                             child: MdWidget(
+                              context,
                               (e[index] ?? "").trim(),
                               false,
                               config: config,
