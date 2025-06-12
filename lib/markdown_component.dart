@@ -282,7 +282,6 @@ class HrLine extends BlockMd {
 class CheckBoxMd extends BlockMd {
   @override
   String get expString => (r"\[((?:\x|\ ))\]\ (\S[^\n]*?)$");
-  get onLinkTab => null;
 
   @override
   Widget build(
@@ -303,7 +302,6 @@ class CheckBoxMd extends BlockMd {
 class RadioButtonMd extends BlockMd {
   @override
   String get expString => (r"\(((?:\x|\ ))\)\ (\S[^\n]*)$");
-  get onLinkTab => null;
 
   @override
   Widget build(
@@ -779,8 +777,6 @@ class SourceTag extends InlineMd {
   }
 }
 
-
-
 /// Link text component
 class ATagMd extends InlineMd {
   @override
@@ -911,9 +907,7 @@ class ImageMd extends InlineMd {
     double? height;
     double? width;
     if (altText.isNotEmpty) {
-      var size = RegExp(
-        r"^([0-9]+)?x?([0-9]+)?",
-      ).firstMatch(altText.trim());
+      var size = RegExp(r"^([0-9]+)?x?([0-9]+)?").firstMatch(altText.trim());
       width = double.tryParse(size?[1]?.toString().trim() ?? 'a');
       height = double.tryParse(size?[2]?.toString().trim() ?? 'a');
     }
