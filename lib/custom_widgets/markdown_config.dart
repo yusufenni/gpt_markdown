@@ -61,12 +61,12 @@ typedef ImageBuilder = Widget Function(BuildContext context, String imageUrl);
 /// The [GptMarkdownConfig] class is used to configure the GPT Markdown component.
 /// It takes a [style] parameter to set the style of the text,
 /// a [textDirection] parameter to set the direction of the text,
-/// and an optional [onLinkTab] parameter to handle link clicks.
+/// and an optional [onLinkTap] parameter to handle link clicks.
 class GptMarkdownConfig {
   const GptMarkdownConfig({
     this.style,
     this.textDirection = TextDirection.ltr,
-    this.onLinkTab,
+    this.onLinkTap,
     this.textAlign,
     this.textScaler,
     this.latexWorkaround,
@@ -98,7 +98,7 @@ class GptMarkdownConfig {
   final TextScaler? textScaler;
 
   /// The callback function to handle link clicks.
-  final void Function(String url, String title)? onLinkTab;
+  final void Function(String url, String title)? onLinkTap;
 
   /// The LaTeX workaround.
   final String Function(String tex)? latexWorkaround;
@@ -146,7 +146,7 @@ class GptMarkdownConfig {
   GptMarkdownConfig copyWith({
     TextStyle? style,
     TextDirection? textDirection,
-    final void Function(String url, String title)? onLinkTab,
+    final void Function(String url, String title)? onLinkTap,
     final TextAlign? textAlign,
     final TextScaler? textScaler,
     final String Function(String tex)? latexWorkaround,
@@ -167,7 +167,7 @@ class GptMarkdownConfig {
     return GptMarkdownConfig(
       style: style ?? this.style,
       textDirection: textDirection ?? this.textDirection,
-      onLinkTab: onLinkTab ?? this.onLinkTab,
+      onLinkTap: onLinkTap ?? this.onLinkTap,
       textAlign: textAlign ?? this.textAlign,
       textScaler: textScaler ?? this.textScaler,
       latexWorkaround: latexWorkaround ?? this.latexWorkaround,
@@ -218,7 +218,7 @@ class GptMarkdownConfig {
         // linkBuilder == other.linkBuilder &&
         // imageBuilder == other.imageBuilder &&
         // highlightBuilder == other.highlightBuilder &&
-        // onLinkTab == other.onLinkTab &&
+        // onLinkTap == other.onLinkTap &&
         textDirection == other.textDirection;
   }
 }

@@ -76,6 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
   TextDirection _direction = TextDirection.ltr;
   final TextEditingController _controller = TextEditingController(
     text: r'''
+decsiob (*) is on the set PQ = {91, 905} jjjzjsx * jjdbhsjsjmamajmsghdhhi msnnsjnskaksjjshahsh
+
+(*)
+
 This is a sample markdown document.
 
 * **bold**
@@ -444,7 +448,7 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                     Widget child = GptMarkdown(
                                       _controller.text,
                                       textDirection: _direction,
-                                      onLinkTab: (url, title) {
+                                      onLinkTap: (url, title) {
                                         debugPrint(url);
                                         debugPrint(title);
                                       },
@@ -615,40 +619,40 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                           ),
                                         );
                                       },
-                                      components: [
-                                        CodeBlockMd(),
-                                        NewLines(),
-                                        BlockQuote(),
-                                        ImageMd(),
-                                        ATagMd(),
-                                        TableMd(),
-                                        HTag(),
-                                        UnOrderedList(),
-                                        OrderedList(),
-                                        RadioButtonMd(),
-                                        CheckBoxMd(),
-                                        HrLine(),
-                                        StrikeMd(),
-                                        BoldMd(),
-                                        ItalicMd(),
-                                        LatexMath(),
-                                        LatexMathMultiLine(),
-                                        HighlightedText(),
-                                        SourceTag(),
-                                        IndentMd(),
-                                      ],
-                                      inlineComponents: [
-                                        ImageMd(),
-                                        ATagMd(),
-                                        TableMd(),
-                                        StrikeMd(),
-                                        BoldMd(),
-                                        ItalicMd(),
-                                        LatexMath(),
-                                        LatexMathMultiLine(),
-                                        HighlightedText(),
-                                        SourceTag(),
-                                      ],
+                                      // components: [
+                                      //   CodeBlockMd(),
+                                      //   NewLines(),
+                                      //   BlockQuote(),
+                                      //   ImageMd(),
+                                      //   ATagMd(),
+                                      //   TableMd(),
+                                      //   HTag(),
+                                      //   UnOrderedList(),
+                                      //   OrderedList(),
+                                      //   RadioButtonMd(),
+                                      //   CheckBoxMd(),
+                                      //   HrLine(),
+                                      //   StrikeMd(),
+                                      //   BoldMd(),
+                                      //   ItalicMd(),
+                                      //   LatexMath(),
+                                      //   LatexMathMultiLine(),
+                                      //   HighlightedText(),
+                                      //   SourceTag(),
+                                      //   IndentMd(),
+                                      // ],
+                                      // inlineComponents: [
+                                      //   ImageMd(),
+                                      //   ATagMd(),
+                                      //   TableMd(),
+                                      //   StrikeMd(),
+                                      //   BoldMd(),
+                                      //   ItalicMd(),
+                                      //   LatexMath(),
+                                      //   LatexMathMultiLine(),
+                                      //   HighlightedText(),
+                                      //   SourceTag(),
+                                      // ],
                                       // codeBuilder: (context, name, code, closed) {
                                       //   return Padding(
                                       //     padding: const EdgeInsets.symmetric(

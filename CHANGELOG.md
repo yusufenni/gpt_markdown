@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Changed `onLinkTab` to `onLinkTap` fixed issues of newLine issues.
+
 ## 1.0.20
 
 * Fix: support balanced parentheses in image and link URLs. [#68](https://github.com/Infinitix-LLC/gpt_markdown/pull/68)

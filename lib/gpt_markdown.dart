@@ -30,7 +30,7 @@ class GptMarkdown extends StatelessWidget {
     this.textAlign,
     this.imageBuilder,
     this.textScaler,
-    this.onLinkTab,
+    this.onLinkTap,
     this.latexBuilder,
     this.codeBuilder,
     this.sourceTagBuilder,
@@ -61,7 +61,7 @@ class GptMarkdown extends StatelessWidget {
   final TextScaler? textScaler;
 
   /// The callback function to handle link clicks.
-  final void Function(String url, String title)? onLinkTab;
+  final void Function(String url, String title)? onLinkTap;
 
   /// The LaTeX workaround.
   final String Function(String tex)? latexWorkaround;
@@ -185,7 +185,7 @@ class GptMarkdown extends StatelessWidget {
         config: GptMarkdownConfig(
           textDirection: textDirection,
           style: style,
-          onLinkTab: onLinkTab,
+          onLinkTap: onLinkTap,
           textAlign: textAlign,
           textScaler: textScaler,
           followLinkColor: followLinkColor,

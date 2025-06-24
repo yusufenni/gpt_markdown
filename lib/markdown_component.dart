@@ -2,12 +2,11 @@ part of 'gpt_markdown.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static final List<MarkdownComponent> components = [
+  static List<MarkdownComponent> get globalComponents => [
     CodeBlockMd(),
+    LatexMathMultiLine(),
     NewLines(),
     BlockQuote(),
-    ImageMd(),
-    ATagMd(),
     TableMd(),
     HTag(),
     UnOrderedList(),
@@ -15,13 +14,6 @@ abstract class MarkdownComponent {
     RadioButtonMd(),
     CheckBoxMd(),
     HrLine(),
-    StrikeMd(),
-    BoldMd(),
-    ItalicMd(),
-    LatexMath(),
-    LatexMathMultiLine(),
-    HighlightedText(),
-    SourceTag(),
     IndentMd(),
   ];
 
@@ -47,7 +39,7 @@ abstract class MarkdownComponent {
   ) {
     var components =
         includeGlobalComponents
-            ? config.components ?? MarkdownComponent.components
+            ? config.components ?? MarkdownComponent.globalComponents
             : config.inlineComponents ?? MarkdownComponent.inlineComponents;
     List<InlineSpan> spans = [];
     Iterable<String> regexes = components.map<String>((e) => e.exp.pattern);
@@ -75,6 +67,14 @@ abstract class MarkdownComponent {
         return "";
       },
       onNonMatch: (p0) {
+        if (p0.isEmpty) {
+          return "";
+        }
+        if (includeGlobalComponents) {
+          var newSpans = generate(context, p0, config.copyWith(), false);
+          spans.addAll(newSpans);
+          return "";
+        }
         spans.add(TextSpan(text: p0, style: config.style));
         return "";
       },
@@ -830,7 +830,7 @@ class ATagMd extends InlineMd {
     if (builder != null) {
       return WidgetSpan(
         child: GestureDetector(
-          onTap: () => config.onLinkTab?.call(url, linkText),
+          onTap: () => config.onLinkTap?.call(url, linkText),
           child: builder(
             context,
             linkText,
@@ -848,7 +848,7 @@ class ATagMd extends InlineMd {
         hoverColor: theme.linkHoverColor,
         color: theme.linkColor,
         onPressed: () {
-          config.onLinkTab?.call(url, linkText);
+          config.onLinkTap?.call(url, linkText);
         },
         text: linkText,
         config: config,
