@@ -4,6 +4,8 @@
 
 A comprehensive Flutter package for rendering rich Markdown and LaTeX content in your apps, designed for seamless integration with AI outputs like ChatGPT and Gemini.
 
+gpt_markdown is a drop-in replacement for flutter_markdown, offering extended support for LaTeX, custom builders, and better AI integration for Flutter apps.
+
 ⭐ If you find this package helpful, please give it a like on [pub.dev](https://pub.dev/packages/gpt_markdown)! Your support means a lot! ⭐
 
 ---
