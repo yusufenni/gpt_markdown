@@ -44,7 +44,7 @@ typedef LatexBuilder =
 typedef LinkBuilder =
     Widget Function(
       BuildContext context,
-      String text,
+      InlineSpan text,
       String url,
       TextStyle style,
     );

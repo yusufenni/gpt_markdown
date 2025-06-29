@@ -18,8 +18,8 @@ abstract class MarkdownComponent {
   ];
 
   static final List<MarkdownComponent> inlineComponents = [
-    ImageMd(),
     ATagMd(),
+    ImageMd(),
     TableMd(),
     StrikeMd(),
     BoldMd(),
@@ -780,7 +780,7 @@ class SourceTag extends InlineMd {
 /// Link text component
 class ATagMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"\[[^\[\]]*\]\([^\s]*\)");
+  RegExp get exp => RegExp(r"(?<!\!)\[.*\]\([^\s]*\)");
 
   @override
   InlineSpan span(
@@ -788,14 +788,33 @@ class ATagMd extends InlineMd {
     String text,
     final GptMarkdownConfig config,
   ) {
-    // First try to find the basic pattern
-    final basicMatch = RegExp(r'\[([^\[\]]*)\]\(').firstMatch(text.trim());
-    if (basicMatch == null) {
+    var bracketCount = 0;
+    var start = 1;
+    var end = 0;
+    for (var i = 0; i < text.length; i++) {
+      if (text[i] == '[') {
+        bracketCount++;
+      } else if (text[i] == ']') {
+        bracketCount--;
+        if (bracketCount == 0) {
+          end = i;
+          break;
+        }
+      }
+    }
+
+    if (text[end + 1] != '(') {
       return const TextSpan();
     }
 
-    final linkText = basicMatch.group(1) ?? '';
-    final urlStart = basicMatch.end;
+    // First try to find the basic pattern
+    // final basicMatch = RegExp(r'(?<!\!)\[(.*)\]\(').firstMatch(text.trim());
+    // if (basicMatch == null) {
+    //   return const TextSpan();
+    // }
+
+    final linkText = text.substring(start, end);
+    final urlStart = end + 2;
 
     // Now find the balanced closing parenthesis
     int parenCount = 0;
@@ -826,14 +845,29 @@ class ATagMd extends InlineMd {
 
     var builder = config.linkBuilder;
 
+    var ending = text.substring(urlEnd + 1);
+
+    var endingSpans = MarkdownComponent.generate(
+      context,
+      ending,
+      config,
+      false,
+    );
+    var theme = GptMarkdownTheme.of(context);
+    var linkTextSpan = TextSpan(
+      children: MarkdownComponent.generate(context, linkText, config, false),
+      style: config.style?.copyWith(color: theme.linkColor),
+    );
+
     // Use custom builder if provided
+    WidgetSpan? child;
     if (builder != null) {
-      return WidgetSpan(
+      child = WidgetSpan(
         child: GestureDetector(
           onTap: () => config.onLinkTap?.call(url, linkText),
           child: builder(
             context,
-            linkText,
+            linkTextSpan,
             url,
             config.style ?? const TextStyle(),
           ),
@@ -842,8 +876,9 @@ class ATagMd extends InlineMd {
     }
 
     // Default rendering
-    var theme = GptMarkdownTheme.of(context);
-    return WidgetSpan(
+    child ??= WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
       child: LinkButton(
         hoverColor: theme.linkHoverColor,
         color: theme.linkColor,
@@ -852,8 +887,11 @@ class ATagMd extends InlineMd {
         },
         text: linkText,
         config: config,
+        child: config.getRich(linkTextSpan),
       ),
     );
+    var textSpan = TextSpan(children: [child, ...endingSpans]);
+    return textSpan;
   }
 }
 

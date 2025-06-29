@@ -75,21 +75,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextDirection _direction = TextDirection.ltr;
   final TextEditingController _controller = TextEditingController(
-    text: r'''
-decsiob (*) is on the set PQ = {91, 905} jjjzjsx * jjdbhsjsjmamajmsghdhhi msnnsjnskaksjjshahsh
-
-(*)
-
-This is a sample markdown document.
-
+    text: r'''This is a sample markdown document.
 * **bold**
 * *italic*
 * **_bold and italic_**
 * ~~strikethrough~~
 * `code`
-* [link](https://www.google.com) ![image](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png)
+* [link](https://www.google.com)
 
-
+[![alt text](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png)](link_url)
 ```markdown
 # Complex Markdown Document for Testing
 
@@ -457,7 +451,8 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                       textAlign: TextAlign.justify,
                                       textScaler: const TextScaler.linear(1),
                                       style: const TextStyle(
-                                        fontSize: 15,
+                                        fontFamily: 'monospace',
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       highlightBuilder: (context, text, style) {
                                         return Container(
@@ -612,7 +607,7 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                       },
                                       linkBuilder:
                                           (context, label, path, style) {
-                                        return Text(
+                                        return Text.rich(
                                           label,
                                           style: style.copyWith(
                                             color: Colors.blue,

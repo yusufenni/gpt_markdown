@@ -1,3 +1,8 @@
+## 1.1.1
+
+* 🖼️ Fixed issue where images wrapped in links (e.g. `[![](img)](url)`) were not rendering properly (#72)
+* 🔗 Resolved parsing errors for consecutive inline links without spacing (e.g. `[a](url)[b](url)`) (#34)
+
 ## 1.1.0
 
 * Changed `onLinkTab` to `onLinkTap` fixed issues of newLine issues.
