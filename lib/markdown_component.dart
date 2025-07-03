@@ -1013,19 +1013,50 @@ class TableMd extends BlockMd {
                       .asMap(),
             )
             .toList();
-    bool heading = RegExp(
-      r"^\|.*?\|\n\|-[-\\ |]*?-\|$",
-      multiLine: true,
-    ).hasMatch(text.trim());
+
+    // Check if table has a header and separator row
+    bool hasHeader = value.length >= 2;
+    List<TextAlign> columnAlignments = [];
+
+    if (hasHeader) {
+      // Parse alignment from the separator row (second row)
+      var separatorRow = value[1];
+      columnAlignments = List.generate(separatorRow.length, (index) {
+        String separator = separatorRow[index] ?? "";
+        separator = separator.trim();
+
+        // Check for alignment indicators
+        bool hasLeftColon = separator.startsWith(':');
+        bool hasRightColon = separator.endsWith(':');
+
+        if (hasLeftColon && hasRightColon) {
+          return TextAlign.center;
+        } else if (hasRightColon) {
+          return TextAlign.right;
+        } else if (hasLeftColon) {
+          return TextAlign.left;
+        } else {
+          return TextAlign.left; // Default alignment
+        }
+      });
+    }
+
     int maxCol = 0;
     for (final each in value) {
       if (maxCol < each.keys.length) {
         maxCol = each.keys.length;
       }
     }
+
     if (maxCol == 0) {
       return Text("", style: config.style);
     }
+
+    // Ensure we have alignment for all columns
+    while (columnAlignments.length < maxCol) {
+      columnAlignments.add(TextAlign.left);
+    }
+
     final controller = ScrollController();
     return Scrollbar(
       controller: controller,
@@ -1044,17 +1075,22 @@ class TableMd extends BlockMd {
               value
                   .asMap()
                   .entries
+                  .where((entry) {
+                    // Skip the separator row (second row) from rendering
+                    if (hasHeader && entry.key == 1) {
+                      return false;
+                    }
+                    return true;
+                  })
                   .map<TableRow>(
                     (entry) => TableRow(
                       decoration:
-                          (heading)
+                          (hasHeader && entry.key == 0)
                               ? BoxDecoration(
                                 color:
-                                    (entry.key == 0)
-                                        ? Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest
-                                        : null,
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerHighest,
                               )
                               : null,
                       children: List.generate(maxCol, (index) {
@@ -1065,20 +1101,41 @@ class TableMd extends BlockMd {
                           return const SizedBox();
                         }
 
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            child: MdWidget(
-                              context,
-                              (e[index] ?? "").trim(),
-                              false,
-                              config: config,
-                            ),
+                        // Apply alignment based on column alignment
+                        Widget content = Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          child: MdWidget(
+                            context,
+                            (e[index] ?? "").trim(),
+                            false,
+                            config: config,
                           ),
                         );
+
+                        // Wrap with alignment widget
+                        switch (columnAlignments[index]) {
+                          case TextAlign.center:
+                            content = Center(child: content);
+                            break;
+                          case TextAlign.right:
+                            content = Align(
+                              alignment: Alignment.centerRight,
+                              child: content,
+                            );
+                            break;
+                          case TextAlign.left:
+                          default:
+                            content = Align(
+                              alignment: Alignment.centerLeft,
+                              child: content,
+                            );
+                            break;
+                        }
+
+                        return content;
                       }),
                     ),
                   )

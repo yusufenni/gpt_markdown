@@ -1,6 +1,7 @@
 ## 1.1.2
 
 * 🔗 Fixed text decoration color of link markdown component
+* 📊 Fixed table column alignment support ([#65](https://github.com/Infinitix-LLC/gpt_markdown/issues/65))
 
 ## 1.1.1
 
