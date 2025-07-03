@@ -515,13 +515,13 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                             RegExp(r"align\*"),
                                             (match) => "aligned");
                                       },
-                                      imageBuilder: (context, url) {
-                                        return Image.network(
-                                          url,
-                                          width: 100,
-                                          height: 100,
-                                        );
-                                      },
+                                      // imageBuilder: (context, url) {
+                                      //   return Image.network(
+                                      //     url,
+                                      //     width: 100,
+                                      //     height: 100,
+                                      //   );
+                                      // },
                                       latexBuilder:
                                           (context, tex, textStyle, inline) {
                                         if (tex.contains(r"\begin{tabular}")) {

@@ -1,3 +1,7 @@
+## 1.1.2
+
+* 🔗 Fixed text decoration color of link markdown component
+
 ## 1.1.1
 
 * 🖼️ Fixed issue where images wrapped in links (e.g. `[![](img)](url)`) were not rendering properly (#72)
