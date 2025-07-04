@@ -1058,6 +1058,36 @@ class TableMd extends BlockMd {
       columnAlignments.add(TextAlign.left);
     }
 
+    var tableBuilder = config.tableBuilder;
+
+    if (tableBuilder != null) {
+      var customTable =
+          List<CustomTableRow?>.generate(value.length, (index) {
+            var isHeader = index == 0;
+            var row = value[index];
+            if (row.isEmpty) {
+              return null;
+            }
+            if (index == 1) {
+              return null;
+            }
+            var fields = List<CustomTableField>.generate(maxCol, (index) {
+              var field = row[index];
+              return CustomTableField(
+                data: field ?? "",
+                alignment: columnAlignments[index],
+              );
+            });
+            return CustomTableRow(isHeader: isHeader, fields: fields);
+          }).nonNulls.toList();
+      return tableBuilder(
+        context,
+        customTable,
+        config.style ?? const TextStyle(),
+        config,
+      );
+    }
+
     final controller = ScrollController();
     return Scrollbar(
       controller: controller,
@@ -1194,4 +1224,18 @@ class UnderLineMd extends InlineMd {
       style: conf.style,
     );
   }
+}
+
+class CustomTableField {
+  final String data;
+  final TextAlign alignment;
+
+  CustomTableField({required this.data, this.alignment = TextAlign.left});
+}
+
+class CustomTableRow {
+  final bool isHeader;
+  final List<CustomTableField> fields;
+
+  CustomTableRow({this.isHeader = false, required this.fields});
 }
