@@ -451,9 +451,9 @@ This document was created to test the robustness of Markdown parsers and to ensu
                                       textAlign: TextAlign.justify,
                                       textScaler: const TextScaler.linear(1),
                                       style: const TextStyle(
-                                        fontFamily: 'monospace',
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                          // fontFamily: 'monospace',
+                                          // fontWeight: FontWeight.bold,
+                                          ),
                                       highlightBuilder: (context, text, style) {
                                         return Container(
                                           padding: const EdgeInsets.symmetric(

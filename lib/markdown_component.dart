@@ -24,6 +24,7 @@ abstract class MarkdownComponent {
     StrikeMd(),
     BoldMd(),
     ItalicMd(),
+    UnderLineMd(),
     LatexMath(),
     LatexMathMultiLine(),
     HighlightedText(),
@@ -1162,5 +1163,35 @@ class CodeBlockMd extends BlockMd {
 
     return config.codeBuilder?.call(context, name, codes, closed) ??
         CodeField(name: name, codes: codes);
+  }
+}
+
+class UnderLineMd extends InlineMd {
+  @override
+  RegExp get exp =>
+      RegExp(r"<u>(.*?)(?:</u>|$)", multiLine: true, dotAll: true);
+
+  @override
+  InlineSpan span(
+    BuildContext context,
+    String text,
+    final GptMarkdownConfig config,
+  ) {
+    var match = exp.firstMatch(text.trim());
+    var conf = config.copyWith(
+      style: (config.style ?? const TextStyle()).copyWith(
+        decoration: TextDecoration.underline,
+        decorationColor: config.style?.color,
+      ),
+    );
+    return TextSpan(
+      children: MarkdownComponent.generate(
+        context,
+        "${match?[1]}",
+        conf,
+        false,
+      ),
+      style: conf.style,
+    );
   }
 }
