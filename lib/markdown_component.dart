@@ -1,82 +1,120 @@
-part of 'gpt_markdown.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:gpt_markdown/custom_widgets/custom_divider.dart';
+import 'package:gpt_markdown/custom_widgets/custom_error_image.dart';
+import 'package:gpt_markdown/custom_widgets/custom_rb_cb.dart';
+import 'package:gpt_markdown/custom_widgets/unordered_ordered_list.dart';
+import 'md_widget.dart';
 
 /// Markdown components
 abstract class MarkdownComponent {
-  static List<MarkdownComponent> get globalComponents => [
-    CodeBlockMd(),
-    LatexMathMultiLine(),
-    NewLines(),
-    BlockQuote(),
-    TableMd(),
-    HTag(),
-    UnOrderedList(),
-    OrderedList(),
-    RadioButtonMd(),
-    CheckBoxMd(),
-    HrLine(),
-    IndentMd(),
-  ];
-
-  static final List<MarkdownComponent> inlineComponents = [
-    ATagMd(),
-    ImageMd(),
-    TableMd(),
-    StrikeMd(),
-    BoldMd(),
-    ItalicMd(),
-    UnderLineMd(),
-    LatexMath(),
-    LatexMathMultiLine(),
-    HighlightedText(),
-    SourceTag(),
-  ];
+  static final List<MarkdownComponent>  components = [
+        CodeBlockMd(),
+        NewLines(),
+        TableMd(),
+        HTag(),
+        IndentMd(),
+        UnOrderedList(),
+        OrderedList(),
+        RadioButtonMd(),
+        CheckBoxMd(),
+        HrLine(),
+        ImageMd(),
+        HighlightedText(),
+        BoldMd(),
+        LatexMathMultyLine(),
+        LatexMath(),
+        ItalicMd(),
+        ATagMd(),
+      ];
 
   /// Generate widget for markdown widget
   static List<InlineSpan> generate(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
-    bool includeGlobalComponents,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var components =
-        includeGlobalComponents
-            ? config.components ?? MarkdownComponent.globalComponents
-            : config.inlineComponents ?? MarkdownComponent.inlineComponents;
     List<InlineSpan> spans = [];
-    Iterable<String> regexes = components.map<String>((e) => e.exp.pattern);
+    List<String> regexes =
+        components.map<String>((e) => e.exp.pattern).toList();
     final combinedRegex = RegExp(
       regexes.join("|"),
       multiLine: true,
       dotAll: true,
     );
+    List<String> elements = [];
     text.splitMapJoin(
       combinedRegex,
       onMatch: (p0) {
         String element = p0[0] ?? "";
+        elements.add(element);
         for (var each in components) {
-          var p = each.exp.pattern;
-          var exp = RegExp(
-            '^$p\$',
-            multiLine: each.exp.isMultiLine,
-            dotAll: each.exp.isDotAll,
-          );
-          if (exp.hasMatch(element)) {
-            spans.add(each.span(context, element, config));
+          if (each.exp.hasMatch(element)) {
+            if (each is InlineMd) {
+              spans.add(each.span(
+                context,
+                element,
+                style,
+                textDirection,
+                onLinkTab,
+                latexWorkaround,
+                latexBuilder,
+                codeBuilder,
+              ));
+            } else {
+              if (each is BlockMd) {
+                spans.addAll([
+                  TextSpan(
+                    text: "\n ",
+                    style: TextStyle(
+                      fontSize: 0,
+                      height: 0,
+                      color: style?.color,
+                    ),
+                  ),
+                  each.span(
+                    context,
+                    element,
+                    style,
+                    textDirection,
+                    onLinkTab,
+                    latexWorkaround,
+                    latexBuilder,
+                    codeBuilder,
+                  ),
+                  TextSpan(
+                    text: "\n ",
+                    style: TextStyle(
+                      fontSize: 0,
+                      height: 0,
+                      color: style?.color,
+                    ),
+                  ),
+                ]);
+              }
+            }
             return "";
           }
         }
         return "";
       },
       onNonMatch: (p0) {
-        if (p0.isEmpty) {
-          return "";
-        }
-        if (includeGlobalComponents) {
-          var newSpans = generate(context, p0, config.copyWith(), false);
-          spans.addAll(newSpans);
-          return "";
-        }
-        spans.add(TextSpan(text: p0, style: config.style));
+        spans.add(
+          TextSpan(
+            text: p0,
+            style: style,
+          ),
+        );
         return "";
       },
     );
@@ -87,7 +125,15 @@ abstract class MarkdownComponent {
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   );
 
   RegExp get exp;
@@ -103,7 +149,15 @@ abstract class InlineMd extends MarkdownComponent {
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   );
 }
 
@@ -111,131 +165,122 @@ abstract class InlineMd extends MarkdownComponent {
 abstract class BlockMd extends MarkdownComponent {
   @override
   bool get inline => false;
-
-  @override
-  RegExp get exp =>
-      RegExp(r'^\ *?' + expString + r"$", dotAll: true, multiLine: true);
-
-  String get expString;
-
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var matches = RegExp(r'^(?<spaces>\ \ +).*').firstMatch(text);
-    var spaces = matches?.namedGroup('spaces');
-    var length = spaces?.length ?? 0;
-    var child = build(context, text, config);
-    length = min(length, 4);
-    if (length > 0) {
-      child = UnorderedListView(
-        spacing: length * 1.0,
-        textDirection: config.textDirection,
-        child: child,
-      );
-    }
-    child = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [Flexible(child: child)],
-    );
     return WidgetSpan(
-      child: child,
-      alignment: PlaceholderAlignment.baseline,
-      baseline: TextBaseline.alphabetic,
-    );
-  }
-
-  Widget build(
-    BuildContext context,
-    String text,
-    final GptMarkdownConfig config,
-  );
-}
-
-/// Indent component
-class IndentMd extends BlockMd {
-  @override
-  String get expString => (r"^(\ \ +)([^\n]+)$");
-  @override
-  Widget build(
-    BuildContext context,
-    String text,
-    final GptMarkdownConfig config,
-  ) {
-    var match = this.exp.firstMatch(text);
-    var conf = config.copyWith();
-    return Directionality(
-      textDirection: config.textDirection,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: config.getRich(
-              TextSpan(
-                children: MarkdownComponent.generate(
-                  context,
-                  match?[2]?.trim() ?? "",
-                  conf,
-                  false,
-                ),
-              ),
-            ),
-          ),
-        ],
+      child: build(
+        context,
+        text,
+        style,
+        textDirection,
+        onLinkTab,
+        latexWorkaround,
+        latexBuilder,
+        codeBuilder,
       ),
+      alignment: PlaceholderAlignment.middle,
     );
   }
+
+  Widget build(
+    BuildContext context,
+    String text,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
+  );
 }
 
 /// Heading component
 class HTag extends BlockMd {
   @override
-  String get expString => (r"(?<hash>#{1,6})\ (?<data>[^\n]+?)$");
+  RegExp get exp => RegExp(r"^(#{1,6})\ ([^\n]+?)$");
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var theme = GptMarkdownTheme.of(context);
-    var match = this.exp.firstMatch(text.trim());
-    var conf = config.copyWith(
-      style: [
-        theme.h1,
-        theme.h2,
-        theme.h3,
-        theme.h4,
-        theme.h5,
-        theme.h6,
-      ][match![1]!.length - 1]?.copyWith(color: config.style?.color),
-    );
-    return config.getRich(
+    var match = exp.firstMatch(text.trim());
+    return Text.rich(
       TextSpan(
         children: [
           ...(MarkdownComponent.generate(
             context,
-            "${match.namedGroup('data')}",
-            conf,
-            false,
+            "${match?[2]}",
+            [
+              Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(color: style?.color),
+              Theme.of(context)
+                  .textTheme
+                  .headlineMedium
+                  ?.copyWith(color: style?.color),
+              Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: style?.color),
+              Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: style?.color),
+              Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: style?.color),
+              Theme.of(context)
+                  .textTheme
+                  .titleSmall
+                  ?.copyWith(color: style?.color),
+            ][match![1]!.length - 1],
+            textDirection,
+            (url, title) {},
+            latexWorkaround,
+            latexBuilder,
+            codeBuilder,
           )),
-          if (match.namedGroup('hash')!.length == 1) ...[
+          if (match[1]!.length == 1) ...[
             const TextSpan(
               text: "\n ",
               style: TextStyle(fontSize: 0, height: 0),
             ),
             WidgetSpan(
               child: CustomDivider(
-                height: theme.hrLineThickness,
-                color:
-                    config.style?.color ??
-                    Theme.of(context).colorScheme.outline,
+                height: 2,
+                color: style?.color ?? Theme.of(context).colorScheme.outline,
               ),
             ),
           ],
         ],
       ),
+      textDirection: textDirection,
     );
   }
 }
@@ -247,14 +292,21 @@ class NewLines extends InlineMd {
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
     return TextSpan(
-      text: "\n\n",
+      text: "\n\n\n\n",
       style: TextStyle(
-        fontSize: config.style?.fontSize ?? 14,
-        height: 1.15,
-        color: config.style?.color,
+        fontSize: 6,
+        color: style?.color,
       ),
     );
   }
@@ -263,18 +315,24 @@ class NewLines extends InlineMd {
 /// Horizontal line component
 class HrLine extends BlockMd {
   @override
-  String get expString => (r"⸻|((--)[-]+)$");
+  RegExp get exp => RegExp(r"^(--)[-]+$");
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var thickness = GptMarkdownTheme.of(context).hrLineThickness;
-    var color = GptMarkdownTheme.of(context).hrLineColor;
     return CustomDivider(
-      height: thickness,
-      color: config.style?.color ?? color,
+      height: 2,
+      color: style?.color ?? Theme.of(context).colorScheme.outline,
     );
   }
 }
@@ -282,19 +340,36 @@ class HrLine extends BlockMd {
 /// Checkbox component
 class CheckBoxMd extends BlockMd {
   @override
-  String get expString => (r"\[((?:\x|\ ))\]\ (\S[^\n]*?)$");
+  RegExp get exp => RegExp(r"^\[(\x?)\]\ (\S[^\n]*?)$");
+  get onLinkTab => null;
 
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var match = this.exp.firstMatch(text.trim());
+    var match = exp.firstMatch(text.trim());
     return CustomCb(
       value: ("${match?[1]}" == "x"),
-      textDirection: config.textDirection,
-      child: MdWidget(context, "${match?[2]}", false, config: config),
+      textDirection: textDirection,
+      child: MdWidget(
+        "${match?[2]}",
+        onLinkTab: onLinkTab,
+        textDirection: textDirection,
+        style: style,
+        latexWorkaround: latexWorkaround,
+        latexBuilder: latexBuilder,
+        codeBuilder: codeBuilder,
+      ),
     );
   }
 }
@@ -302,80 +377,84 @@ class CheckBoxMd extends BlockMd {
 /// Radio Button component
 class RadioButtonMd extends BlockMd {
   @override
-  String get expString => (r"\(((?:\x|\ ))\)\ (\S[^\n]*)$");
+  RegExp get exp => RegExp(r"^\((\x?)\)\ (\S[^\n]*)$");
+  get onLinkTab => null;
 
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var match = this.exp.firstMatch(text.trim());
+    var match = exp.firstMatch(text.trim());
     return CustomRb(
       value: ("${match?[1]}" == "x"),
-      textDirection: config.textDirection,
-      child: MdWidget(context, "${match?[2]}", false, config: config),
+      textDirection: textDirection,
+      child: MdWidget(
+        "${match?[2]}",
+        onLinkTab: onLinkTab,
+        textDirection: textDirection,
+        style: style,
+        latexWorkaround: latexWorkaround,
+        latexBuilder: latexBuilder,
+        codeBuilder: codeBuilder,
+      ),
     );
   }
 }
 
-/// Block quote component
-class BlockQuote extends InlineMd {
+/// Indent
+class IndentMd extends BlockMd {
   @override
-  bool get inline => false;
-  @override
-  RegExp get exp =>
-  // RegExp(r"(?<=\n\n)(\ +)(.+?)(?=\n\n)", dotAll: true, multiLine: true);
-  RegExp(
-    r"(?:(?:^)\ *>[^\n]+)(?:(?:\n)\ *>[^\n]+)*",
-    dotAll: true,
-    multiLine: true,
-  );
+  RegExp get exp => RegExp(r"^(\ +)([^\n]+)$");
+  get onLinkTab => null;
 
   @override
-  InlineSpan span(
+  Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
+    [
+      r"\\\[(.*?)\\\]",
+      r"\\\((.*?)\\\)",
+      r"(?<!\\)\$((?:\\.|[^$])*?)\$(?!\\)",
+    ].join("|");
     var match = exp.firstMatch(text);
-    var dataBuilder = StringBuffer();
-    var m = match?[0] ?? '';
-    for (var each in m.split('\n')) {
-      if (each.startsWith(RegExp(r'\ *>'))) {
-        var subString = each.trimLeft().substring(1);
-        if (subString.startsWith(' ')) {
-          subString = subString.substring(1);
-        }
-        dataBuilder.writeln(subString);
-      } else {
-        dataBuilder.writeln(each);
-      }
-    }
-    var data = dataBuilder.toString().trim();
-    var child = TextSpan(
-      children: MarkdownComponent.generate(context, data, config, true),
-    );
-    return TextSpan(
-      children: [
-        WidgetSpan(
-          child: Directionality(
-            textDirection: config.textDirection,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: BlockQuoteWidget(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                direction: config.textDirection,
-                width: 3,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 8.0),
-                  child: config.getRich(child),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+    int spaces = (match?[1] ?? "").length;
+    return UnorderedListView(
+      bulletColor: style?.color,
+      padding: spaces * 5,
+      bulletSize: 0,
+      textDirection: textDirection,
+      child: RichText(
+          text: TextSpan(
+        children: MarkdownComponent.generate(
+            context,
+            "${match?[2]}",
+            style,
+            textDirection,
+            onLinkTab,
+            latexWorkaround,
+            latexBuilder,
+            codeBuilder),
+      )),
     );
   }
 }
@@ -383,272 +462,223 @@ class BlockQuote extends InlineMd {
 /// Unordered list component
 class UnOrderedList extends BlockMd {
   @override
-  String get expString => (r"(?:\-|\*)\ ([^\n]+)$");
+  RegExp get exp => RegExp(r"^(?:\-|\*)\ ([^\n]+)$");
+  get onLinkTab => null;
 
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var match = this.exp.firstMatch(text);
-
-    var child = MdWidget(context, "${match?[1]?.trim()}", true, config: config);
-
-    return config.unOrderedListBuilder?.call(
-          context,
-          child,
-          config.copyWith(),
-        ) ??
-        UnorderedListView(
-          bulletColor:
-              (config.style?.color ?? DefaultTextStyle.of(context).style.color),
-          padding: 7,
-          spacing: 10,
-          bulletSize:
-              0.3 *
-              (config.style?.fontSize ??
-                  DefaultTextStyle.of(context).style.fontSize ??
-                  kDefaultFontSize),
-          textDirection: config.textDirection,
-          child: child,
-        );
+    var match = exp.firstMatch(text);
+    return UnorderedListView(
+      bulletColor: style?.color,
+      padding: 10.0,
+      bulletSize: 3,
+      textDirection: textDirection,
+      child: MdWidget(
+        "${match?[1]}",
+        onLinkTab: onLinkTab,
+        textDirection: textDirection,
+        style: style,
+        latexWorkaround: latexWorkaround,
+        latexBuilder: latexBuilder,
+        codeBuilder: codeBuilder,
+      ),
+    );
   }
 }
 
 /// Ordered list component
 class OrderedList extends BlockMd {
   @override
-  String get expString => (r"([0-9]+)\.\ ([^\n]+)$");
+  RegExp get exp => RegExp(r"^([0-9]+\.)\ ([^\n]+)$");
+
+  get onLinkTab => null;
 
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var match = this.exp.firstMatch(text.trim());
-
-    var no = "${match?[1]}";
-
-    var child = MdWidget(context, "${match?[2]?.trim()}", true, config: config);
-    return config.orderedListBuilder?.call(
-          context,
-          no,
-          child,
-          config.copyWith(),
-        ) ??
-        OrderedListView(
-          no: "$no.",
-          textDirection: config.textDirection,
-          style: (config.style ?? const TextStyle()).copyWith(
-            fontWeight: FontWeight.w100,
-          ),
-          child: child,
-        );
+    var match = exp.firstMatch(text.trim());
+    return OrderedListView(
+      no: "${match?[1]}",
+      textDirection: textDirection,
+      style: (style ?? const TextStyle()).copyWith(fontWeight: FontWeight.w100),
+      child: MdWidget(
+        "${match?[2]}",
+        onLinkTab: onLinkTab,
+        textDirection: textDirection,
+        style: style,
+        latexWorkaround: latexWorkaround,
+        latexBuilder: latexBuilder,
+        codeBuilder: codeBuilder,
+      ),
+    );
   }
 }
 
 class HighlightedText extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"`(?!`)(.+?)(?<!`)`(?!`)");
+  RegExp get exp => RegExp(r"`.*?`");
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var match = exp.firstMatch(text.trim());
-    var highlightedText = match?[1] ?? "";
-
-    if (config.highlightBuilder != null) {
-      return WidgetSpan(
-        alignment: PlaceholderAlignment.middle,
-        child: config.highlightBuilder!(
-          context,
-          highlightedText,
-          config.style ?? const TextStyle(),
-        ),
-      );
-    }
-
-    var style =
-        config.style?.copyWith(
-          fontWeight: FontWeight.bold,
-          background:
-              Paint()
-                ..color = GptMarkdownTheme.of(context).highlightColor
-                ..strokeCap = StrokeCap.round
-                ..strokeJoin = StrokeJoin.round,
-        ) ??
-        TextStyle(
-          fontWeight: FontWeight.bold,
-          background:
-              Paint()
-                ..color = GptMarkdownTheme.of(context).highlightColor
-                ..strokeCap = StrokeCap.round
-                ..strokeJoin = StrokeJoin.round,
-        );
-
-    return TextSpan(text: highlightedText, style: style);
+    return TextSpan(
+      text: text,
+      style: style?.copyWith(
+            fontWeight: FontWeight.bold,
+            background: Paint()
+              ..color = Theme.of(context).colorScheme.surfaceVariant
+              ..strokeCap = StrokeCap.round
+              ..strokeJoin = StrokeJoin.round,
+          ) ??
+          TextStyle(
+            fontWeight: FontWeight.bold,
+            background: Paint()
+              ..color = Theme.of(context).colorScheme.surfaceVariant
+              ..strokeCap = StrokeCap.round
+              ..strokeJoin = StrokeJoin.round,
+          ),
+    );
   }
 }
 
 /// Bold text component
 class BoldMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"(?<!\*)\*\*(?<!\s)(.+?)(?<!\s)\*\*(?!\*)");
+  RegExp get exp => RegExp(r"\*\*(([\S^\*].*?)?[\S^\*?])\*\*");
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
     var match = exp.firstMatch(text.trim());
-    var conf = config.copyWith(
-      style:
-          config.style?.copyWith(fontWeight: FontWeight.bold) ??
+    return TextSpan(
+      children: MarkdownComponent.generate(
+        context,
+        "${match?[1]}",
+        style?.copyWith(fontWeight: FontWeight.bold) ??
+            const TextStyle(fontWeight: FontWeight.w900),
+        textDirection,
+        onLinkTab,
+        latexWorkaround,
+        latexBuilder,
+        codeBuilder,
+      ),
+      style: style?.copyWith(fontWeight: FontWeight.bold) ??
           const TextStyle(fontWeight: FontWeight.bold),
     );
-    return TextSpan(
-      children: MarkdownComponent.generate(
-        context,
-        "${match?[1]}",
-        conf,
-        false,
-      ),
-      style: conf.style,
-    );
   }
 }
 
-class StrikeMd extends InlineMd {
+class LatexMathMultyLine extends BlockMd {
   @override
-  RegExp get exp => RegExp(r"(?<!\*)\~\~(?<!\s)(.+?)(?<!\s)\~\~(?!\*)");
-
-  @override
-  InlineSpan span(
-    BuildContext context,
-    String text,
-    final GptMarkdownConfig config,
-  ) {
-    var match = exp.firstMatch(text.trim());
-    var conf = config.copyWith(
-      style:
-          config.style?.copyWith(
-            decoration: TextDecoration.lineThrough,
-            decorationColor: config.style?.color,
-          ) ??
-          const TextStyle(decoration: TextDecoration.lineThrough),
-    );
-    return TextSpan(
-      children: MarkdownComponent.generate(
-        context,
-        "${match?[1]}",
-        conf,
-        false,
-      ),
-      style: conf.style,
-    );
-  }
-}
-
-/// Italic text component
-class ItalicMd extends InlineMd {
-  @override
-  RegExp get exp =>
-      RegExp(r"(?:(?<!\*)\*(?<!\s)(.+?)(?<!\s)\*(?!\*))", dotAll: true);
-
-  @override
-  InlineSpan span(
-    BuildContext context,
-    String text,
-    final GptMarkdownConfig config,
-  ) {
-    var match = exp.firstMatch(text.trim());
-    var data = match?[1] ?? match?[2];
-    var conf = config.copyWith(
-      style: (config.style ?? const TextStyle()).copyWith(
-        fontStyle: FontStyle.italic,
-      ),
-    );
-    return TextSpan(
-      children: MarkdownComponent.generate(context, "$data", conf, false),
-      style: conf.style,
-    );
-  }
-}
-
-class LatexMathMultiLine extends BlockMd {
-  @override
-  String get expString => (r"\ *\\\[((?:.)*?)\\\]|(\ *\\begin.*?\\end{.*?})");
-  // (r"\ *\\\[((?:(?!\n\n\n).)*?)\\\]|(\\begin.*?\\end{.*?})");
-  @override
-  RegExp get exp => RegExp(expString, dotAll: true, multiLine: true);
+  RegExp get exp => RegExp(
+        r"\\\[(.*?)\\\]|(\\begin.*?\\end{.*?})",
+        dotAll: true,
+      );
 
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    void Function(String url, String title)? onLinkTab,
+    String Function(String tex)? latexWorkaround,
+    Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
     var p0 = exp.firstMatch(text.trim());
-    String mathText = p0?[1] ?? p0?[2] ?? '';
-    var workaround = config.latexWorkaround ?? (String tex) => tex;
+    p0?.group(0);
+    String mathText = p0?[1] ?? p0?[2] ?? "";
+    var workaround = latexWorkaround ?? (String tex) => tex;
 
-    var builder =
-        config.latexBuilder ??
+    var builder = latexBuilder ??
         (BuildContext context, String tex, TextStyle textStyle, bool inline) =>
-            SelectableAdapter(
-              selectedText: tex,
-              child: Math.tex(
-                tex,
-                textStyle: textStyle,
-                mathStyle: MathStyle.display,
-                textScaleFactor: 1,
-                settings: const TexParserSettings(strict: Strict.ignore),
-                options: MathOptions(
-                  sizeUnderTextStyle: MathSize.large,
-                  color:
-                      config.style?.color ??
-                      Theme.of(context).colorScheme.onSurface,
-                  fontSize:
-                      config.style?.fontSize ??
-                      Theme.of(context).textTheme.bodyMedium?.fontSize,
-                  mathFontOptions: FontOptions(
-                    fontFamily: "Main",
-                    fontWeight: config.style?.fontWeight ?? FontWeight.normal,
-                    fontShape: FontStyle.normal,
-                  ),
-                  textFontOptions: FontOptions(
-                    fontFamily: "Main",
-                    fontWeight: config.style?.fontWeight ?? FontWeight.normal,
-                    fontShape: FontStyle.normal,
-                  ),
-                  style: MathStyle.display,
-                ),
-                onErrorFallback: (err) {
-                  return Text(
-                    workaround(mathText),
-                    textDirection: config.textDirection,
-                    style: textStyle.copyWith(
-                      color:
-                          (!kDebugMode)
-                              ? null
-                              : Theme.of(context).colorScheme.error,
-                    ),
-                  );
-                },
+            Math.tex(
+              tex,
+              textStyle: textStyle,
+              mathStyle: MathStyle.display,
+              textScaleFactor: 1,
+              settings: const TexParserSettings(
+                strict: Strict.ignore,
               ),
+              options: MathOptions(
+                sizeUnderTextStyle: MathSize.large,
+                color: style?.color ?? Theme.of(context).colorScheme.onSurface,
+                fontSize: style?.fontSize ??
+                    Theme.of(context).textTheme.bodyMedium?.fontSize,
+                mathFontOptions: FontOptions(
+                  fontFamily: "Main",
+                  fontWeight: style?.fontWeight ?? FontWeight.normal,
+                  fontShape: FontStyle.normal,
+                ),
+                textFontOptions: FontOptions(
+                  fontFamily: "Main",
+                  fontWeight: style?.fontWeight ?? FontWeight.normal,
+                  fontShape: FontStyle.normal,
+                ),
+                style: MathStyle.display,
+              ),
+              onErrorFallback: (err) {
+                return Text(
+                  workaround(mathText),
+                  textDirection: textDirection,
+                  style: textStyle.copyWith(
+                      color: (!kDebugMode)
+                          ? null
+                          : Theme.of(context).colorScheme.error),
+                );
+              },
             );
     return builder(
-      context,
-      workaround(mathText),
-      config.style ?? const TextStyle(),
-      false,
-    );
+        context, workaround(mathText), style ?? const TextStyle(), false);
   }
 }
 
@@ -656,124 +686,110 @@ class LatexMathMultiLine extends BlockMd {
 class LatexMath extends InlineMd {
   @override
   RegExp get exp => RegExp(
-    [
-      r"\\\((.*?)\\\)",
-      // r"(?<!\\)\$((?:\\.|[^$])*?)\$(?!\\)",
-    ].join("|"),
-    dotAll: true,
-  );
+        [
+          r"\\\((.*?)\\\)",
+          // r"(?<!\\)\$((?:\\.|[^$])*?)\$(?!\\)",
+        ].join("|"),
+        dotAll: true,
+      );
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
     var p0 = exp.firstMatch(text.trim());
     p0?.group(0);
     String mathText = p0?[1]?.toString() ?? "";
-    var workaround = config.latexWorkaround ?? (String tex) => tex;
-    var builder =
-        config.latexBuilder ??
+    var workaround = latexWorkaround ?? (String tex) => tex;
+    var builder = latexBuilder ??
         (BuildContext context, String tex, TextStyle textStyle, bool inline) =>
-            SelectableAdapter(
-              selectedText: tex,
-              child: Math.tex(
-                tex,
-                textStyle: textStyle,
-                mathStyle: MathStyle.display,
-                textScaleFactor: 1,
-                settings: const TexParserSettings(strict: Strict.ignore),
-                options: MathOptions(
-                  sizeUnderTextStyle: MathSize.large,
-                  color:
-                      config.style?.color ??
-                      Theme.of(context).colorScheme.onSurface,
-                  fontSize:
-                      config.style?.fontSize ??
-                      Theme.of(context).textTheme.bodyMedium?.fontSize,
-                  mathFontOptions: FontOptions(
-                    fontFamily: "Main",
-                    fontWeight: config.style?.fontWeight ?? FontWeight.normal,
-                    fontShape: FontStyle.normal,
-                  ),
-                  textFontOptions: FontOptions(
-                    fontFamily: "Main",
-                    fontWeight: config.style?.fontWeight ?? FontWeight.normal,
-                    fontShape: FontStyle.normal,
-                  ),
-                  style: MathStyle.display,
-                ),
-                onErrorFallback: (err) {
-                  return Text(
-                    workaround(mathText),
-                    textDirection: config.textDirection,
-                    style: textStyle.copyWith(
-                      color:
-                          (!kDebugMode)
-                              ? null
-                              : Theme.of(context).colorScheme.error,
-                    ),
-                  );
-                },
+            Math.tex(
+              tex,
+              textStyle: textStyle,
+              mathStyle: MathStyle.display,
+              textScaleFactor: 1,
+              settings: const TexParserSettings(
+                strict: Strict.ignore,
               ),
+              options: MathOptions(
+                sizeUnderTextStyle: MathSize.large,
+                color: style?.color ?? Theme.of(context).colorScheme.onSurface,
+                fontSize: style?.fontSize ??
+                    Theme.of(context).textTheme.bodyMedium?.fontSize,
+                mathFontOptions: FontOptions(
+                  fontFamily: "Main",
+                  fontWeight: style?.fontWeight ?? FontWeight.normal,
+                  fontShape: FontStyle.normal,
+                ),
+                textFontOptions: FontOptions(
+                  fontFamily: "Main",
+                  fontWeight: style?.fontWeight ?? FontWeight.normal,
+                  fontShape: FontStyle.normal,
+                ),
+                style: MathStyle.display,
+              ),
+              onErrorFallback: (err) {
+                return Text(
+                  workaround(mathText),
+                  textDirection: textDirection,
+                  style: textStyle.copyWith(
+                      color: (!kDebugMode)
+                          ? null
+                          : Theme.of(context).colorScheme.error),
+                );
+              },
             );
     return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
       child: builder(
-        context,
-        workaround(mathText),
-        config.style ?? const TextStyle(),
-        true,
-      ),
+          context, workaround(mathText), style ?? const TextStyle(), true),
     );
   }
 }
 
-/// source text component
-class SourceTag extends InlineMd {
+/// Italic text component
+class ItalicMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"(?:【.*?)?\[(\d+?)\]");
+  RegExp get exp => RegExp(r"\*(\S(.*?\S)?)\*", dotAll: true);
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
     var match = exp.firstMatch(text.trim());
-    var content = match?[1];
-    if (content == null) {
-      return const TextSpan();
-    }
-    return WidgetSpan(
-      alignment: PlaceholderAlignment.middle,
-      child: Padding(
-        padding: const EdgeInsets.all(2),
-        child:
-            config.sourceTagBuilder?.call(
-              context,
-              content,
-              const TextStyle(),
-            ) ??
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: Material(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-                shape: const OvalBorder(),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    content,
-                    // style: (style ?? const TextStyle()).copyWith(),
-                    textDirection: config.textDirection,
-                  ),
-                ),
-              ),
-            ),
+    return TextSpan(
+      children: MarkdownComponent.generate(
+        context,
+        "${match?[1]}",
+        (style ?? const TextStyle()).copyWith(fontStyle: FontStyle.italic),
+        textDirection,
+        onLinkTab,
+        latexWorkaround,
+        latexBuilder,
+        codeBuilder,
       ),
+      style: (style ?? const TextStyle()).copyWith(fontStyle: FontStyle.italic),
     );
   }
 }
@@ -781,202 +797,99 @@ class SourceTag extends InlineMd {
 /// Link text component
 class ATagMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"(?<!\!)\[.*\]\([^\s]*\)");
+  RegExp get exp => RegExp(r"\[([^\s\*][^\n]*?[^\s]?)?\]\(([^\s\*]+)?\)");
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    var bracketCount = 0;
-    var start = 1;
-    var end = 0;
-    for (var i = 0; i < text.length; i++) {
-      if (text[i] == '[') {
-        bracketCount++;
-      } else if (text[i] == ']') {
-        bracketCount--;
-        if (bracketCount == 0) {
-          end = i;
-          break;
-        }
-      }
-    }
-
-    if (text[end + 1] != '(') {
+    var match = exp.firstMatch(text.trim());
+    if (match?[1] == null && match?[2] == null) {
       return const TextSpan();
     }
-
-    // First try to find the basic pattern
-    // final basicMatch = RegExp(r'(?<!\!)\[(.*)\]\(').firstMatch(text.trim());
-    // if (basicMatch == null) {
-    //   return const TextSpan();
-    // }
-
-    final linkText = text.substring(start, end);
-    final urlStart = end + 2;
-
-    // Now find the balanced closing parenthesis
-    int parenCount = 0;
-    int urlEnd = urlStart;
-
-    for (int i = urlStart; i < text.length; i++) {
-      final char = text[i];
-
-      if (char == '(') {
-        parenCount++;
-      } else if (char == ')') {
-        if (parenCount == 0) {
-          // This is the closing parenthesis of the link
-          urlEnd = i;
-          break;
-        } else {
-          parenCount--;
-        }
-      }
-    }
-
-    if (urlEnd == urlStart) {
-      // No closing parenthesis found
-      return const TextSpan();
-    }
-
-    final url = text.substring(urlStart, urlEnd).trim();
-
-    var builder = config.linkBuilder;
-
-    var ending = text.substring(urlEnd + 1);
-
-    var endingSpans = MarkdownComponent.generate(
-      context,
-      ending,
-      config,
-      false,
-    );
-    var theme = GptMarkdownTheme.of(context);
-    var linkTextSpan = TextSpan(
-      children: MarkdownComponent.generate(context, linkText, config, false),
-      style: config.style?.copyWith(
-        color: theme.linkColor,
-        decorationColor: theme.linkColor,
-      ),
-    );
-
-    // Use custom builder if provided
-    WidgetSpan? child;
-    if (builder != null) {
-      child = WidgetSpan(
-        child: GestureDetector(
-          onTap: () => config.onLinkTap?.call(url, linkText),
-          child: builder(
-            context,
-            linkTextSpan,
-            url,
-            config.style ?? const TextStyle(),
-          ),
-        ),
-      );
-    }
-
-    // Default rendering
-    child ??= WidgetSpan(
+    return WidgetSpan(
       alignment: PlaceholderAlignment.baseline,
       baseline: TextBaseline.alphabetic,
-      child: LinkButton(
-        hoverColor: theme.linkHoverColor,
-        color: theme.linkColor,
-        onPressed: () {
-          config.onLinkTap?.call(url, linkText);
+      child: GestureDetector(
+        onTap: () {
+          if (onLinkTab == null) {
+            return;
+          }
+          onLinkTab("${match?[2]}", "${match?[1]}");
         },
-        text: linkText,
-        config: config,
-        child: config.getRich(linkTextSpan),
+        child: Text.rich(
+          TextSpan(
+            text: "${match?[1]}",
+            style: (style ?? const TextStyle()).copyWith(
+              color: Colors.blueAccent,
+              decorationColor: Colors.blue,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+          textDirection: textDirection,
+        ),
       ),
     );
-    var textSpan = TextSpan(children: [child, ...endingSpans]);
-    return textSpan;
   }
 }
 
 /// Image component
 class ImageMd extends InlineMd {
   @override
-  RegExp get exp => RegExp(r"\!\[[^\[\]]*\]\([^\s]*\)");
+  RegExp get exp => RegExp(r"\!\[([^\s][^\n]*[^\s]?)?\]\(([^\s]+)\)");
 
   @override
   InlineSpan span(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    // First try to find the basic pattern
-    final basicMatch = RegExp(r'\!\[([^\[\]]*)\]\(').firstMatch(text.trim());
-    if (basicMatch == null) {
-      return const TextSpan();
-    }
-
-    final altText = basicMatch.group(1) ?? '';
-    final urlStart = basicMatch.end;
-
-    // Now find the balanced closing parenthesis
-    int parenCount = 0;
-    int urlEnd = urlStart;
-
-    for (int i = urlStart; i < text.length; i++) {
-      final char = text[i];
-
-      if (char == '(') {
-        parenCount++;
-      } else if (char == ')') {
-        if (parenCount == 0) {
-          // This is the closing parenthesis of the image
-          urlEnd = i;
-          break;
-        } else {
-          parenCount--;
-        }
-      }
-    }
-
-    if (urlEnd == urlStart) {
-      // No closing parenthesis found
-      return const TextSpan();
-    }
-
-    final url = text.substring(urlStart, urlEnd).trim();
-
+    var match = exp.firstMatch(text.trim());
     double? height;
     double? width;
-    if (altText.isNotEmpty) {
-      var size = RegExp(r"^([0-9]+)?x?([0-9]+)?").firstMatch(altText.trim());
+    if (match?[1] != null) {
+      var size = RegExp(r"^([0-9]+)?x?([0-9]+)?")
+          .firstMatch(match![1].toString().trim());
       width = double.tryParse(size?[1]?.toString().trim() ?? 'a');
       height = double.tryParse(size?[2]?.toString().trim() ?? 'a');
     }
-
-    final Widget image;
-    if (config.imageBuilder != null) {
-      image = config.imageBuilder!(context, url);
-    } else {
-      image = SizedBox(
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.bottom,
+      child: SizedBox(
         width: width,
         height: height,
         child: Image(
-          image: NetworkImage(url),
-          loadingBuilder: (
-            BuildContext context,
-            Widget child,
-            ImageChunkEvent? loadingProgress,
-          ) {
+          image: NetworkImage(
+            "${match?[2]}",
+          ),
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) {
               return child;
             }
             return CustomImageLoading(
-              progress:
-                  loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : 1,
+              progress: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : 1,
             );
           },
           fit: BoxFit.fill,
@@ -984,110 +897,50 @@ class ImageMd extends InlineMd {
             return const CustomImageError();
           },
         ),
-      );
-    }
-    return WidgetSpan(alignment: PlaceholderAlignment.bottom, child: image);
+      ),
+    );
   }
 }
 
 /// Table component
 class TableMd extends BlockMd {
   @override
-  String get expString =>
-      (r"(((\|[^\n\|]+\|)((([^\n\|]+\|)+)?)\ *)(\n\ *(((\|[^\n\|]+\|)(([^\n\|]+\|)+)?))\ *)+)$");
-  @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    final List<Map<int, String>> value =
-        text
-            .split('\n')
-            .map<Map<int, String>>(
-              (e) =>
-                  e
-                      .trim()
-                      .split('|')
-                      .where((element) => element.isNotEmpty)
-                      .toList()
-                      .asMap(),
-            )
-            .toList();
-
-    // Check if table has a header and separator row
-    bool hasHeader = value.length >= 2;
-    List<TextAlign> columnAlignments = [];
-
-    if (hasHeader) {
-      // Parse alignment from the separator row (second row)
-      var separatorRow = value[1];
-      columnAlignments = List.generate(separatorRow.length, (index) {
-        String separator = separatorRow[index] ?? "";
-        separator = separator.trim();
-
-        // Check for alignment indicators
-        bool hasLeftColon = separator.startsWith(':');
-        bool hasRightColon = separator.endsWith(':');
-
-        if (hasLeftColon && hasRightColon) {
-          return TextAlign.center;
-        } else if (hasRightColon) {
-          return TextAlign.right;
-        } else if (hasLeftColon) {
-          return TextAlign.left;
-        } else {
-          return TextAlign.left; // Default alignment
-        }
-      });
-    }
-
+    final List<Map<int, String>> value = text
+        .split('\n')
+        .map<Map<int, String>>(
+          (e) => e
+              .split('|')
+              .where((element) => element.isNotEmpty)
+              .toList()
+              .asMap(),
+        )
+        .toList();
+    bool heading = RegExp(
+      r"^\|.*?\|\n\|-[-\\ |]*?-\|$",
+      multiLine: true,
+    ).hasMatch(text.trim());
     int maxCol = 0;
     for (final each in value) {
       if (maxCol < each.keys.length) {
         maxCol = each.keys.length;
       }
     }
-
     if (maxCol == 0) {
-      return Text("", style: config.style);
+      return Text("", style: style);
     }
-
-    // Ensure we have alignment for all columns
-    while (columnAlignments.length < maxCol) {
-      columnAlignments.add(TextAlign.left);
-    }
-
-    var tableBuilder = config.tableBuilder;
-
-    if (tableBuilder != null) {
-      var customTable =
-          List<CustomTableRow?>.generate(value.length, (index) {
-            var isHeader = index == 0;
-            var row = value[index];
-            if (row.isEmpty) {
-              return null;
-            }
-            if (index == 1) {
-              return null;
-            }
-            var fields = List<CustomTableField>.generate(maxCol, (index) {
-              var field = row[index];
-              return CustomTableField(
-                data: field ?? "",
-                alignment: columnAlignments[index],
-              );
-            });
-            return CustomTableRow(isHeader: isHeader, fields: fields);
-          }).nonNulls.toList();
-      return tableBuilder(
-        context,
-        customTable,
-        config.style ?? const TextStyle(),
-        config,
-      );
-    }
-
     final controller = ScrollController();
     return Scrollbar(
       controller: controller,
@@ -1095,147 +948,167 @@ class TableMd extends BlockMd {
         controller: controller,
         scrollDirection: Axis.horizontal,
         child: Table(
-          textDirection: config.textDirection,
+          textDirection: textDirection,
           defaultColumnWidth: CustomTableColumnWidth(),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           border: TableBorder.all(
             width: 1,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          children:
-              value
-                  .asMap()
-                  .entries
-                  .where((entry) {
-                    // Skip the separator row (second row) from rendering
-                    if (hasHeader && entry.key == 1) {
-                      return false;
-                    }
-                    return true;
-                  })
-                  .map<TableRow>(
-                    (entry) => TableRow(
-                      decoration:
-                          (hasHeader && entry.key == 0)
-                              ? BoxDecoration(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainerHighest,
-                              )
+          children: value
+              .asMap()
+              .entries
+              .map<TableRow>(
+                (entry) => TableRow(
+                  decoration: (heading)
+                      ? BoxDecoration(
+                          color: (entry.key == 0)
+                              ? Theme.of(context).colorScheme.surfaceVariant
                               : null,
-                      children: List.generate(maxCol, (index) {
-                        var e = entry.value;
-                        String data = e[index] ?? "";
-                        if (RegExp(r"^:?--+:?$").hasMatch(data.trim()) ||
-                            data.trim().isEmpty) {
-                          return const SizedBox();
-                        }
+                        )
+                      : null,
+                  children: List.generate(
+                    maxCol,
+                    (index) {
+                      var e = entry.value;
+                      String data = e[index] ?? "";
+                      if (RegExp(r"^--+$").hasMatch(data.trim()) ||
+                          data.trim().isEmpty) {
+                        return const SizedBox();
+                      }
 
-                        // Apply alignment based on column alignment
-                        Widget content = Padding(
+                      return Center(
+                        child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                              horizontal: 8, vertical: 4),
                           child: MdWidget(
-                            context,
                             (e[index] ?? "").trim(),
-                            false,
-                            config: config,
+                            textDirection: textDirection,
+                            onLinkTab: onLinkTab,
+                            style: style,
+                            latexWorkaround: latexWorkaround,
+                            latexBuilder: latexBuilder,
+                            codeBuilder: codeBuilder,
                           ),
-                        );
-
-                        // Wrap with alignment widget
-                        switch (columnAlignments[index]) {
-                          case TextAlign.center:
-                            content = Center(child: content);
-                            break;
-                          case TextAlign.right:
-                            content = Align(
-                              alignment: Alignment.centerRight,
-                              child: content,
-                            );
-                            break;
-                          case TextAlign.left:
-                          default:
-                            content = Align(
-                              alignment: Alignment.centerLeft,
-                              child: content,
-                            );
-                            break;
-                        }
-
-                        return content;
-                      }),
-                    ),
-                  )
-                  .toList(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+              .toList(),
         ),
       ),
     );
   }
+
+  @override
+  RegExp get exp => RegExp(
+        r"^(((\|[^\n\|]+\|)((([^\n\|]+\|)+)?))(\n(((\|[^\n\|]+\|)(([^\n\|]+\|)+)?)))+)$",
+      );
 }
 
 class CodeBlockMd extends BlockMd {
   @override
-  String get expString => r"```(.*?)\n((.*?)(:?\n\s*?```)|(.*)(:?\n```)?)$";
+  RegExp get exp => RegExp(
+        r"\s*?```(.*?)\n((.*?)(:?\n\s*?```)|(.*)(:?\n```)?)$",
+        multiLine: true,
+        dotAll: true,
+      );
   @override
   Widget build(
     BuildContext context,
     String text,
-    final GptMarkdownConfig config,
+    TextStyle? style,
+    TextDirection textDirection,
+    final void Function(String url, String title)? onLinkTab,
+    final String Function(String tex)? latexWorkaround,
+    final Widget Function(
+            BuildContext context, String tex, TextStyle textStyle, bool inline)?
+        latexBuilder,
+    final Widget Function(BuildContext context, String name, String code)?
+        codeBuilder,
   ) {
-    String codes = this.exp.firstMatch(text)?[2] ?? "";
-    String name = this.exp.firstMatch(text)?[1] ?? "";
+    String codes = exp.firstMatch(text)?[2] ?? "";
+    String name = exp.firstMatch(text)?[1] ?? "";
     codes = codes.replaceAll(r"```", "").trim();
-    bool closed = text.endsWith("```");
-
-    return config.codeBuilder?.call(context, name, codes, closed) ??
-        CodeField(name: name, codes: codes);
-  }
-}
-
-class UnderLineMd extends InlineMd {
-  @override
-  RegExp get exp =>
-      RegExp(r"<u>(.*?)(?:</u>|$)", multiLine: true, dotAll: true);
-
-  @override
-  InlineSpan span(
-    BuildContext context,
-    String text,
-    final GptMarkdownConfig config,
-  ) {
-    var match = exp.firstMatch(text.trim());
-    var conf = config.copyWith(
-      style: (config.style ?? const TextStyle()).copyWith(
-        decoration: TextDecoration.underline,
-        decorationColor: config.style?.color,
-      ),
-    );
-    return TextSpan(
-      children: MarkdownComponent.generate(
-        context,
-        "${match?[1]}",
-        conf,
-        false,
-      ),
-      style: conf.style,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: codeBuilder != null
+          ? codeBuilder(context, name, codes)
+          : CodeField(name: name, codes: codes),
     );
   }
 }
 
-class CustomTableField {
-  final String data;
-  final TextAlign alignment;
+class CodeField extends StatefulWidget {
+  const CodeField({super.key, required this.name, required this.codes});
+  final String name;
+  final String codes;
 
-  CustomTableField({required this.data, this.alignment = TextAlign.left});
+  @override
+  State<CodeField> createState() => _CodeFieldState();
 }
 
-class CustomTableRow {
-  final bool isHeader;
-  final List<CustomTableField> fields;
-
-  CustomTableRow({this.isHeader = false, required this.fields});
+class _CodeFieldState extends State<CodeField> {
+  bool _copied = false;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.onInverseSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                child: Text(widget.name),
+              ),
+              const Spacer(),
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: widget.codes))
+                      .then((value) {
+                    setState(() {
+                      _copied = true;
+                    });
+                  });
+                  await Future.delayed(const Duration(seconds: 2));
+                  setState(() {
+                    _copied = false;
+                  });
+                },
+                icon: Icon(
+                  (_copied) ? Icons.done : Icons.content_paste,
+                  size: 15,
+                ),
+                label: Text((_copied) ? "Copied!" : "Copy code"),
+              ),
+            ],
+          ),
+          const Divider(
+            height: 1,
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              widget.codes,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
