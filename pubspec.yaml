@@ -11,7 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_math_fork:
-    path: /Users/yusufwork/Desktop/mathfork/flutter_math
+    git:
+      url: https://github.com/yusufenni/math_fork.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
